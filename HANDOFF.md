@@ -105,6 +105,10 @@ render it once in Chrome. Add a PROJECT.html §9 line.
    `out/logs/edl_broadcast_final.log`, no crash file, no "final exit" line in `out/logs/chain.log`, PID 13984 gone. Cause
    unknown. Resume: rerun `out/logs/render_all.sh` detached (it deletes the 0-byte `0342.png` and skips done frames).
    Ask the owner first: the stop may have been on purpose. Story of the whole project: `DEVELOPMENT-JOURNEY.html`.
+   RESTARTED 2026-10-17 10:26:39 by the owner's request (PID 20012 in `out/logs/chain.pid`; old log kept as
+   `out/logs/edl_broadcast_final.run1.log`). Frame 342 saved 10:29:40 (2 min 38 s). 78 frames left, about 3.5-4 h.
+   Likely cause of the first stop (not proven): an outside close of the hidden console. Blender printed its quit banner
+   but not "Blender quit", and the chain script wrote no "final exit" line; no crash file, no app-error or power event.
 1. When `out/broadcast_final.mp4` exists: `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`.
    Check 3 frames (44.0, 54.45, 55.95) against `frames/ref/`. Update PROJECT.html (status table row "Blender
    photoreal scene" -> done, §9 entry with render time and file).
