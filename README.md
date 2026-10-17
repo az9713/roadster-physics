@@ -15,6 +15,8 @@ measurements of the event video (the broadcast HUD and calibrated camera views),
 - [`PROJECT.html`](https://az9713.github.io/roadster-simulation/PROJECT.html) — the project document: all
   measurements, sources, the model, and the change log.
 - [`replay.html`](https://az9713.github.io/roadster-simulation/replay.html) — interactive 3D replay (Three.js).
+- [`PHYSICS.html`](https://az9713.github.io/roadster-simulation/PHYSICS.html) — the physics report: the complete theory
+  with derivations, every parameter with its status (measured, published, derived, est.), and the results against the HUD.
 - [`DEVELOPMENT-JOURNEY.html`](https://az9713.github.io/roadster-simulation/DEVELOPMENT-JOURNEY.html) — how it was
   built, from the first prompt to this site: the videos, the measurements, the physics, Blender, what went wrong, and
   the unknown unknowns.
@@ -71,6 +73,7 @@ this repository.
 |---|---|
 | `sim/wall_flip_sim.py` | Wall rebuild from the HUD, on-wall physics, 6-DOF flight with 10 nozzles, tank and landing. Writes `out/replay_data.js` and prints a self-check. `python sim/wall_flip_sim.py short` uses the short-overhang variant. |
 | `data/` | HUD readings (CSV). |
+| `out/physics/` | Charts for `PHYSICS.html` and `make_charts.py`, which makes them and prints every derived number in the report. |
 | `blender/` | Scene, car model, camera calibration, triangulation, HUD overlay and mux. Run Blender 5.2 with `--factory-startup`. |
 | `out/*.mp4` | Draft videos: `coverage_draft.mp4` (20.5 s), `broadcast_draft.mp4` (13.97 s), `broadcast_draft_hud.mp4` (13.97 s, HUD + sound). |
 | `out/sfx/` | ElevenLabs sound-effect takes and `mix.py`, which mixes them to the sim. |
