@@ -5,6 +5,10 @@ The car drives up a curved wall, rides the 170° overhang upside down, lets go a
 in the air, and lands on its cold-gas thrusters at about 56.3 s. Every dimension of the wall and the car comes from
 measurements of the event video (the broadcast HUD and calibrated camera views), or from press reports.
 
+[![Broadcast cut of the simulation: click to play the videos](out/poster.jpg)](https://az9713.github.io/roadster-simulation/)
+
+*Click the image to open the video page (broadcast cut with HUD and sound, broadcast cut, coverage cut).*
+
 **Live pages (GitHub Pages):** <https://az9713.github.io/roadster-simulation/>
 
 - [`index.html`](https://az9713.github.io/roadster-simulation/) — the three draft videos in browser players.
