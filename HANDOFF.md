@@ -76,6 +76,30 @@ Purpose: measure the real car path after release from two views (shot B + slow-m
   done when `out/logs/chain.log` has "final exit 0" and `out/broadcast_final.mp4` exists. Resumable: rerun
   `render_all.sh` (it deletes 0-byte placeholders; finished drafts are skipped frame by frame).
 
+## NEXT TASK FIRST: physics report (asked 2026-10-17, decisions taken)
+The owner's request (verbatim): "Can you write a HTML report about the physics of the simulation? You first present the
+theory, the complete theory and the mathematics behind this simulation, and then present the actual numbers. For example,
+the parameters for the car, for the roadster, and the ramp, everything else. So the goal is to demystify how you come up
+with this simulation based on your earlier research about the setting up and also based on the video."
+The owner's answers (2026-10-17):
+- Build it in a fresh session (this one).
+- Math with **KaTeX** from a CDN (cdnjs, exact version; auto-render), like replay.html needs internet.
+- **Static PNG charts** made with matplotlib from `out/replay_data.js` and `data/*.csv`, committed next to the report
+  (suggested folder `out/physics/`): wall profile x-z with pitch, altitude sim vs HUD (with the 0.30 s lag),
+  G sim vs HUD, tank pressure + gas mass, the 10 nozzle commands, wall-phase speed/suction/power.
+- **Full derivations + plain words**: derive each equation from first principles (Newton, rigid-body rotation and
+  quaternions, wall-phase tyre/suction/G, Abel-Noble real gas, polytropic blowdown, nozzle thrust and mass flow, the
+  controller and the bounded least-squares valve allocator, HUD lag free-fall fit), then a plain-language reading, then
+  the code location (`sim/wall_flip_sim.py:<line>`).
+Structure: Part 1 theory (complete), Part 2 the numbers (car, ramp, nozzles, tank, controller, estimates marked est. vs
+measured vs derived, with sources: PROJECT.html §3-§8, README source table), Part 3 results vs HUD and the sensitivity
+findings (n = 1.4/1.25/1.1, lag, nozzle sizing, tolerance 2.0 -> 2.5 ft and why), and known limits (planar y = 0,
+suction-noise artefact, gate failed in triangulation, overhang hud vs short).
+Rules: read `sim/wall_flip_sim.py` fully first; every number from the code or PROJECT.html, none from memory; dark mode
+(CLAUDE.md colours); ASD-STE100 style; no personal info (write "the owner"). File: `PHYSICS.html` at the repo root; link it
+from `index.html`, `README.md` and `DEVELOPMENT-JOURNEY.html`; commit, push, wait for the Pages build, check HTTP 200 and
+render it once in Chrome. Add a PROJECT.html §9 line.
+
 ## Next task
 0. The Cycles final STOPPED at about 08:12 on 2026-10-17: last saved frame `seg01/0341.png` (341 of 420), no error in
    `out/logs/edl_broadcast_final.log`, no crash file, no "final exit" line in `out/logs/chain.log`, PID 13984 gone. Cause
