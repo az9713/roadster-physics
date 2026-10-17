@@ -199,7 +199,7 @@ axs[0].set(ylabel="speed (m/s)", title="On the wall: speed, minimum suction, mot
 axs[1].plot(P1["t"], P1["F_s_min"] / S.G0, color=SIM, label="minimum suction to stay on")
 axs[1].axhline(S.SUCTION_MAX_KG, color=HUD, lw=1.5, ls="--", label="HUD DOWNFORCE peak 4,700 kgf")
 axs[1].set(ylabel="suction (kgf)")
-axs[1].legend(loc="lower right")
+axs[1].legend(loc="center left")
 axs[2].plot(P1["t"], P1["power"] / 1e3, color=SIM)
 axs[2].set(ylabel="power F·v (kW)", xlabel="time (s)", xlim=(45.5, S.T_RELEASE))
 for a in axs:
