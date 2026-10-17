@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Roadster Wall Flip Replay</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1; --muted:#94a3b8; --accent:#fb923c; --accent2:#2dd4bf; --border:#334155; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; overflow:hidden; background:var(--bg); color:var(--text); font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  #view { position:fixed; inset:0; }
+  #hud { position:fixed; top:12px; left:12px; display:flex; gap:10px; flex-wrap:wrap; pointer-events:none; }
+  .g { width:86px; text-align:center; }
+  .g svg { width:86px; height:86px; display:block; }
+  .g .lab { font-size:9px; letter-spacing:.08em; fill:var(--muted); }
+  .g .val { font:600 18px ui-monospace,Consolas,monospace; fill:var(--text); }
+  #time { position:fixed; top:12px; right:12px; font:600 15px ui-monospace,Consolas,monospace; background:rgba(15,23,42,.8); border:1px solid var(--border); border-radius:6px; padding:4px 10px; }
+  #time small { display:block; font-weight:400; font-size:11px; color:var(--muted); }
+  #bar { position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 16px; background:rgba(15,23,42,.9); border-top:1px solid var(--border); }
+  #bar input[type=range] { flex:1 1 240px; accent-color:var(--accent); }
+  button, select { background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:5px 10px; font:inherit; cursor:pointer; }
+  button.on { border-color:var(--accent); color:var(--accent); }
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div id="hud"></div>
+<div id="time">0.00 s<small>wall</small></div>
+<div id="bar">
+  <button id="play">Play</button>
+  <input id="scrub" type="range" step="0.01">
+  <select id="speed"><option>0.25</option><option>0.5</option><option selected>1</option><option>2</option></select>
+  <button data-cam="broadcast" class="on">Broadcast</button>
+  <button data-cam="chase">Chase</button>
+  <button data-cam="free">Free</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="out/replay_data.js"></script>
+<script>
+// Sim coordinates are used as-is: x forward along the run, y left, z up. Frame layout:
+// [t, x, y, z, qw, qx, qy, qz, noz x10 (fraction of nominal max thrust), G, alt_ft, gas_kg, P_bar]
+const S = window.SIM, F = S.frames, T0 = F[0][0], T1 = F[F.length - 1][0];
+const C = S.car, NZ = S.nozzles;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.getElementById('view').appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05080f);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 500);
+camera.up.set(0, 0, 1);                         // must precede OrbitControls: it reads camera.up once
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.HemisphereLight(0x9fb4d8, 0x1a1a1a, 0.7));
+const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+sun.position.set(-20, -30, 40);
+scene.add(sun);
+
+// ground
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 50), new THREE.MeshLambertMaterial({ color: 0x1b2230 }));
+ground.position.set(-8, 0, 0);
+scene.add(ground);
+
+// wall: ribbon from the measured profile (SIM.wall.x/z), width SIM.wall.width, centred on y = 0
+const wx = S.wall.x, wz = S.wall.z, hw = S.wall.width / 2;
+const vert = [], idx = [];
+for (let i = 0; i < wx.length; i++) vert.push(wx[i], hw, wz[i], wx[i], -hw, wz[i]);
+for (let i = 0; i < wx.length - 1; i++) { const a = 2 * i; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+const wg = new THREE.BufferGeometry();
+wg.setAttribute('position', new THREE.Float32BufferAttribute(vert, 3));
+wg.setIndex(idx);
+wg.computeVertexNormals();
+scene.add(new THREE.Mesh(wg, new THREE.MeshLambertMaterial({ color: 0x8a8f96, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })));
+const line = (y, color) => scene.add(new THREE.Line(
+  new THREE.BufferGeometry().setFromPoints(wx.map((x, i) => new THREE.Vector3(x, y, wz[i]))),
+  new THREE.LineBasicMaterial({ color })));
+line(hw, 0xdc2626); line(-hw, 0xdc2626); line(0, 0xffffff);
+
+// car: body box in body frame (bottom -H_CG+0.12, top CAR_H-H_CG, as the sim's collision corners)
+const car = new THREE.Group();
+scene.add(car);
+const zb = -C.h_cg + 0.12, zt = C.H - C.h_cg;
+const body = new THREE.Mesh(new THREE.BoxGeometry(C.L, C.W, zt - zb), new THREE.MeshLambertMaterial({ color: 0xd9dde3 }));
+body.position.z = (zb + zt) / 2;
+car.add(body);
+const box = (sx, sy, sz, x, y, z, color) => {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), new THREE.MeshBasicMaterial({ color }));
+  m.position.set(x, y, z); car.add(m);
+};
+box(1.6, 1.7, 0.02, -0.3, 0, zt + 0.01, 0x111827);                    // roof glass, shows which side is up
+for (const y of [0.65, -0.65]) {
+  box(0.04, 0.4, 0.1, C.L / 2 + 0.01, y, 0.1, 0xfef9c3);              // headlights, nose = +x
+  box(0.04, 0.4, 0.1, -C.L / 2 - 0.01, y, 0.15, 0xdc2626);            // tail lights
+}
+const WR = 0.35;                                                      // wheel radius est.
+const wheelGeo = new THREE.CylinderGeometry(WR, WR, 0.26, 20);        // cylinder axis = body y
+const wheelMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
+for (const sx of [1, -1]) for (const sy of [1, -1]) {
+  const w = new THREE.Mesh(wheelGeo, wheelMat);
+  w.position.set(sx * C.wheelbase / 2, sy * (C.track / 2 + 0.1), -C.h_cg + WR);
+  car.add(w);
+}
+
+// plumes: cone apex at the nozzle, pointing along -dir (dir is the thrust direction, exhaust goes opposite)
+const plumeGeo = new THREE.ConeGeometry(0.28, 1, 16, 1, true);
+plumeGeo.translate(0, -0.5, 0);                                       // apex at origin, cone along -y
+const plumeMat = new THREE.MeshBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+const plumes = NZ.map(n => {
+  const p = new THREE.Mesh(plumeGeo, plumeMat);
+  p.position.fromArray(n.pos);
+  p.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), new THREE.Vector3(...n.dir).negate().normalize());
+  car.add(p);
+  return p;
+});
+
+// HUD: broadcast-style round gauges
+const GAUGES = [['G FORCE', 'G', 18, 4, 2], ['ALTITUDE', 'FT', 19, 80, 1], ['GAS', 'KG', 20, 250, 0], ['PRESSURE', 'BAR', 21, 600, 0]];
+const RC = 2 * Math.PI * 36;
+document.getElementById('hud').innerHTML = GAUGES.map(([lab, unit]) => `
+  <div class="g"><svg viewBox="0 0 86 86">
+    <circle cx="43" cy="43" r="36" fill="rgba(15,23,42,.75)" stroke="#334155" stroke-width="3"/>
+    <circle class="arc" cx="43" cy="43" r="36" fill="none" stroke="#e2e8f0" stroke-width="3" stroke-dasharray="0 ${RC}" transform="rotate(-90 43 43)"/>
+    <text class="lab" x="43" y="28" text-anchor="middle">${lab}</text>
+    <text class="val" x="43" y="50" text-anchor="middle">0</text>
+    <text class="lab" x="43" y="64" text-anchor="middle">${unit}</text>
+  </svg></div>`).join('');
+const gEls = [...document.querySelectorAll('.g')].map(g => [g.querySelector('.arc'), g.querySelector('.val')]);
+
+// frame lookup: binary search on t (two segments joined at release, not a uniform time step), then lerp + slerp
+const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
+function sample(t) {
+  let lo = 0, hi = F.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; (F[m][0] <= t ? lo = m : hi = m); }
+  const a = F[lo], b = F[hi], u = Math.min(1, Math.max(0, (t - a[0]) / ((b[0] - a[0]) || 1)));
+  const r = a.map((v, k) => v + (b[k] - v) * u);
+  qa.set(a[5], a[6], a[7], a[4]); qb.set(b[5], b[6], b[7], b[4]);  // sim (w,x,y,z) -> three (x,y,z,w)
+  return [r, qa.slerp(qb, u)];
+}
+
+const CHASE = new THREE.Vector3(-5, -14, 3), tmp = new THREE.Vector3();
+let cam = 'broadcast';
+function setCam(c) {
+  cam = c;
+  document.querySelectorAll('[data-cam]').forEach(b => b.classList.toggle('on', b.dataset.cam === c));
+  if (c === 'broadcast') { camera.position.set(-28, -40, 6); controls.target.set(-7, 0, 9); }
+  controls.enabled = c !== 'chase';
+}
+
+let t = T0, playing = false, last = performance.now();
+const scrub = document.getElementById('scrub'), timeEl = document.getElementById('time'), playBtn = document.getElementById('play');
+scrub.min = T0; scrub.max = T1; scrub.value = T0;
+scrub.oninput = () => { t = +scrub.value; };
+const toggle = () => { if (t >= T1) t = T0; playing = !playing; playBtn.textContent = playing ? 'Pause' : 'Play'; };
+playBtn.onclick = toggle;
+addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); toggle(); } });
+document.querySelectorAll('[data-cam]').forEach(b => b.onclick = () => setCam(b.dataset.cam));
+setCam('broadcast');
+
+function resize() { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+function frame(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  if (playing) { t += dt * +document.getElementById('speed').value; if (t >= T1) { t = T1; toggle(); } scrub.value = t; }
+  const [r, q] = sample(t);
+  car.position.set(r[1], r[2], r[3]);
+  car.quaternion.copy(q);
+  plumes.forEach((p, k) => { const v = r[8 + k]; p.visible = v > 0.02; p.scale.set(0.6 + v, 0.4 + 3.5 * v, 0.6 + v); });
+  GAUGES.forEach(([, , k, max, dec], i) => {
+    gEls[i][1].textContent = r[k].toFixed(dec);
+    gEls[i][0].setAttribute('stroke-dasharray', `${RC * Math.min(1, Math.max(0, r[k] / max))} ${RC}`);
+  });
+  timeEl.innerHTML = `${t.toFixed(2)} s<small>${t < S.report.release_time_s ? 'on the wall' : 'free flight'}</small>`;
+  if (cam === 'chase') {
+    // ponytail: fixed world offset beside the wall (y = -14 m), so the camera never passes through the curved wall
+    tmp.copy(car.position).add(CHASE);
+    camera.position.lerp(tmp, 0.08);
+    camera.lookAt(car.position);
+  } else controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

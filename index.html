@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Roadster Wall Flip</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1; --muted:#94a3b8; --accent:#fb923c; --accent2:#2dd4bf; --border:#334155; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui, sans-serif; }
+  main { max-width:960px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { margin:0 0 4px; font-size:1.6rem; }
+  h2 { margin:32px 0 8px; font-size:1.15rem; color:var(--accent); }
+  p { color:var(--text2); }
+  .muted { color:var(--muted); font-size:.9rem; }
+  a { color:var(--accent2); }
+  nav a { display:inline-block; margin:4px 16px 4px 0; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px; margin:12px 0; }
+  video { width:100%; height:auto; display:block; border-radius:4px; background:#000; }
+</style>
+</head>
+<body>
+<main>
+<h1>Tesla Roadster wall flip: simulation</h1>
+<p class="muted">A physics simulation and Blender render of the wall-flip stunt in the PCMag video
+<a href="https://www.youtube.com/watch?v=quRC56Z0EJw&t=101s">quRC56Z0EJw</a>, 1:41–2:00. These videos are renders of the simulation, not real footage.</p>
+<nav>
+  <a href="PROJECT.html">Project document (measurements, model, change log)</a>
+  <a href="replay.html">Interactive 3D replay</a>
+  <a href="https://github.com/az9713/roadster-simulation">Source code</a>
+</nav>
+
+<h2>Broadcast cut with HUD and sound</h2>
+<div class="card">
+  <video controls preload="metadata" src="out/broadcast_draft_hud.mp4"></video>
+  <p class="muted">13.97 s, 1280x720, EEVEE draft. Sim time 44.0–57.98 s. G-FORCE and ALTITUDE gauges show sim values with the measured 0.30 s HUD lag. Sound effects: ElevenLabs, mixed to the sim's nozzle commands and wall speed.</p>
+</div>
+
+<h2>Broadcast cut, no HUD</h2>
+<div class="card">
+  <video controls preload="metadata" src="out/broadcast_draft.mp4"></video>
+  <p class="muted">13.97 s, 1280x720, EEVEE draft. Same edit as the broadcast feed: camera A (long lens behind the wall foot) and camera B (tripod).</p>
+</div>
+
+<h2>Coverage cut (extra angles)</h2>
+<div class="card">
+  <video controls preload="metadata" src="out/coverage_draft.mp4"></video>
+  <p class="muted">20.5 s, 1280x720, EEVEE draft. Cameras that did not exist at the event: C low wide at the foot, D on the truss above the lip, E on the car's right flank, F chase drone (0.6 s lag), G low across the landing zone, plus a 0.4× replay of the release.</p>
+</div>
+</main>
+</body>
+</html>

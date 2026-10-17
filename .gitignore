@@ -1,0 +1,13 @@
+# YouTube downloads (other channels' videos)
+video_files/
+# Render frame dumps and intermediates (regenerate with blender/build_scene.py, blender/hud_mux.py)
+out/edl_*/
+out/hud/
+out/logs/
+out/stills/
+out/look/
+*.blend1
+# Local agent state
+.ignore/
+.impeccable/
+__pycache__/
