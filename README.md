@@ -15,6 +15,9 @@ measurements of the event video (the broadcast HUD and calibrated camera views),
 - [`PROJECT.html`](https://az9713.github.io/roadster-simulation/PROJECT.html) — the project document: all
   measurements, sources, the model, and the change log.
 - [`replay.html`](https://az9713.github.io/roadster-simulation/replay.html) — interactive 3D replay (Three.js).
+- [`DEVELOPMENT-JOURNEY.html`](https://az9713.github.io/roadster-simulation/DEVELOPMENT-JOURNEY.html) — how it was
+  built, from the first prompt to this site: the videos, the measurements, the physics, Blender, what went wrong, and
+  the unknown unknowns.
 
 The videos are renders of the simulation (Blender EEVEE drafts, 1280x720). They are not real footage.
 

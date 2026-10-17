@@ -77,6 +77,10 @@ Purpose: measure the real car path after release from two views (shot B + slow-m
   `render_all.sh` (it deletes 0-byte placeholders; finished drafts are skipped frame by frame).
 
 ## Next task
+0. The Cycles final STOPPED at about 08:12 on 2026-10-17: last saved frame `seg01/0341.png` (341 of 420), no error in
+   `out/logs/edl_broadcast_final.log`, no crash file, no "final exit" line in `out/logs/chain.log`, PID 13984 gone. Cause
+   unknown. Resume: rerun `out/logs/render_all.sh` detached (it deletes the 0-byte `0342.png` and skips done frames).
+   Ask the owner first: the stop may have been on purpose. Story of the whole project: `DEVELOPMENT-JOURNEY.html`.
 1. When `out/broadcast_final.mp4` exists: `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`.
    Check 3 frames (44.0, 54.45, 55.95) against `frames/ref/`. Update PROJECT.html (status table row "Blender
    photoreal scene" -> done, §9 entry with render time and file).
