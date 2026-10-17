@@ -81,6 +81,39 @@ Purpose: measure the real car path after release from two views (shot B + slow-m
 `DEVELOPMENT-JOURNEY.html`; PROJECT.html §9 line added. Charts + derived numbers: `python out/physics/make_charts.py`
 (imports the sim module, ~30 s; prints the free-fall lag fit, throat sizes, sensitivity table, short-variant run).
 Known stale: PROJECT.html §8 table still shows the first passing run (pre roll-window change); PHYSICS.html uses current.
+Commits: e36a9b3 (report), 69be99f (legend fix), c4d50e7 (card borders: impeccable side-tab finding fixed, no ignores).
+
+## NEXT TASK FIRST: "Part 4: the flip" in PHYSICS.html (asked 2026-10-17, decisions taken)
+The owner's request (verbatim): "i regard the flipping at the top from bottom-up to top-down as the most interesting and
+challenging of the stunt. write a dedicated section for its physics with detailed mathematical modeling. write it in the
+context of what just comes before and after of the flippling. include any aerodynamics and newtonian mechanics involved
+in one unified model, if possible. add visualization to make the understanding assessible."
+"The flip" = the release from the inverted 170° ceiling and the 180° half-roll to upright (owner confirmed by context:
+"about 8 s" in the broadcast cut = sim 52.0 s). The owner's answers:
+- **Window: ceiling -> burn.** 51.31 s (wall reaches 170°, inverted, suction on) -> 52.25 release -> 52.35-53.10 half-roll
+  (pitch -10° removed by 53.40) -> 53.95 burn starts. Before = riding the ceiling and letting go; after = free fall into burn.
+- **Model depth: report-only analysis.** Write the full unified equations (rigid body + suction release + jets +
+  aerodynamics: drag, aero roll damping, jet impingement on the ceiling / ground effect). Evaluate the terms the sim
+  omits FROM THE SIM'S OWN TRAJECTORY, with numbers, to show their size. Do NOT change `sim/wall_flip_sim.py` or its
+  self-check.
+- **Visuals: filmstrip + charts (static PNG, matplotlib, same dark palette as `out/physics/make_charts.py`:** sim
+  #0d9488, HUD #ea580c, #8b5cf6, #ec4899 on #1e293b, validated with the dataviz skill's validator). Rear-view filmstrip of
+  the car at ~8 instants with jet arrows, roll angle, moment arm, gravity; charts: roll angle/rate/accel, jet thrusts,
+  moment budget, aero terms.
+- **Placement: new "Part 4: the flip" in PHYSICS.html** with its own TOC entry; extend `make_charts.py` (or one new
+  script in `out/physics/`) so every number it quotes is printed. Then PROJECT.html §9 line, commit, push, Pages 200,
+  render once in Chrome (KaTeX 0 errors, no console errors).
+Seed facts (hand-computed 2026-10-17 from the code's values; RE-VERIFY in the script before quoting):
+- Min-jerk roll over T = 0.75 s: peak rate pi*1.875/T = 7.9 rad/s; peak accel pi*5.774/T^2 = 32 rad/s^2;
+  moment I_roll*alpha = 650*32 ~ 21 kN·m; lift pair at y = ±0.85 m -> ~12 kN per nozzle = 35% of 35 kN. Fig. 6 peaks
+  0.33-0.38 of max agree (FR+RR fire ~52.6 s to start the roll, FL+RL ~53.05 s to stop it).
+- Inverted, the lift nozzles (body +z thrust) exhaust toward the ceiling: jet impingement / suck-down near the surface is
+  a candidate aero term. Dynamic pressure at the 8.14 m/s release ~0.5*1.2*8.14^2 ~ 40 Pa (check).
+- Free-fall lag fit (vz0 1.329 m/s) vs sim release vz 1.413 m/s; sim G in free fall 0.0-1.4 g vs HUD 0.2-0.6 g.
+- Limits to state: planar y = 0 (real car drifts +y), constant inertia, G gauge taken unlagged (jets seen 53.45 s),
+  overhang hud vs short (car at/past lip at 52.25 in shot B), roll inertia 650 is est. (thrust need scales with it).
+Use the skills `rigorous-explainer` (structure, derivations; KaTeX not MathJax here, delimiters $$ and \( \)) and
+`dataviz` (palette check). Style: ASD-STE100 + precise phrasing; "the owner"; every number from code/run/PROJECT.html.
 
 ## Next task
 0. The Cycles final STOPPED at about 08:12 on 2026-10-17: last saved frame `seg01/0341.png` (341 of 420), no error in
@@ -91,6 +124,7 @@ Known stale: PROJECT.html §8 table still shows the first passing run (pre roll-
    `out/logs/edl_broadcast_final.run1.log`). Frame 342 saved 10:29:40 (2 min 38 s). 78 frames left, about 3.5-4 h.
    Likely cause of the first stop (not proven): an outside close of the hidden console. Blender printed its quit banner
    but not "Blender quit", and the chain script wrote no "final exit" line; no crash file, no app-error or power event.
+   Status 2026-10-17 ~14:00: frame 372 of 420 saved, PID 20012 alive. Check `out/logs/chain.log` for "final exit 0".
 1. When `out/broadcast_final.mp4` exists: `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`.
    Check 3 frames (44.0, 54.45, 55.95) against `frames/ref/`. Update PROJECT.html (status table row "Blender
    photoreal scene" -> done, §9 entry with render time and file).
@@ -107,9 +141,12 @@ Known stale: PROJECT.html §8 table still shows the first passing run (pre roll-
 The session scratchpad (temporary, not in the repo):
 `edges.py` (edge overlay sheets edges2_*.png), `cars.py`/`crops.py` (gridded crops used to read car centres by eye),
 `r1_rough.py` (first R1 camera guess), `lips.png`. The durable record is the dicts and functions in `blender/triangulate.py`.
+2026-10-17 report session: `fitlag.py`, `sens.py` (lag fit, sensitivity) — superseded by `out/physics/make_charts.py`.
 
 ## Workflow provenance
-- Skills used this project: `blender-headless` (load before Blender runs), `handoff-after-clear`.
+- Skills used this project: `blender-headless` (load before Blender runs), `handoff-after-clear`; for PHYSICS.html
+  `rigorous-explainer` (checktex/checklt/check_links/check_prose run; MathJax-only checks skipped) and `dataviz`
+  (palette validator); `claude-in-chrome` (opened the repo for the owner).
 - Advisor guidance (followed): report measured vs sim to the owner before editing the sim.
 
 ## Tools and rules (unchanged)
