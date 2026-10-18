@@ -235,6 +235,9 @@ d_t = 2 * np.sqrt(35e3 / (S.CF * F["P"][0] * 1e5) / np.pi)
 d_e = d_t * np.sqrt(eps)
 print(f"lift nozzle: NPR {npr:.0f}, ideal exit Mach {Me:.2f}, area ratio {eps:.1f}, throat {d_t*1e3:.1f} mm, "
       f"ideal exit {d_e*1e3:.0f} mm")
+npr_lo = np.interp(53.05, t, F["P"]) * 1e5 / 101325
+print(f"NPR {npr_lo:.0f}-{npr:.0f} against the 1985 suckdown data at NPR 1.45-2.4: "
+      f"{npr_lo/2.4:.0f} to {npr/1.45:.0f} times larger")
 Spl = S.CAR_L * S.CAR_W
 for d in (d_t, d_e):
     Aj = 2 * np.pi * d ** 2 / 4

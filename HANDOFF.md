@@ -119,12 +119,16 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
   `t NN.NN:` grid stamps of flip.py); labels: formula constant/index (223), code line number (76), section number (36);
   `CITED` sections -> "cited source (press or video)" (47). KaTeX `{,}` separator parsed. Checked 203 -> 400 (all agree); no tool 1,331 -> 752
   (none 388, HUD 196, footage 168). Proofs: `--rev 099640d` still flags the 14; tyre friction 1.1 -> 1.2 test is caught.
-- Left (not done): print lines in `out/physics/flip.py` / `make_charts.py` for worked-example numbers (biggest groups:
-  PHYSICS 4.8 aero 38, §8 controller 33, 4.4 33, 4.9 32); reader for `out/camera_calib.json` (~6 numbers);
-  HUD/video readings in prose stay unchecked (inputs).
+- 4.8 aero DONE (2026-10-18): 22 PHYSICS pins in `PINS`, 1 print line in `flip.py` (NPR ratio 181-370), `in_math` counts
+  `$$` from the text start (the 3,000-char window cut a display opener), citation labels `TM` / `p.` / `Figs. N and`,
+  `CITED` takes (doc, text ending) too. Doc edits: 180 -> 181 (4.8, 4.9), drag "less than 5%" -> "about 4%".
+  Checked 400 -> 426 (all agree), no tool 752 -> 691. 4.8 left: "1 bar" (script uses 101,325 Pa).
+- Left (not done), largest worked-example groups now: PHYSICS "The wall" 33, "Timing and the controller" 28, 4.4 28;
+  reader for `out/camera_calib.json` (~6 numbers); HUD/video readings in prose stay unchecked (inputs).
 
 ## Next task
-No task is open. Candidate: the worked-example print lines above, section by section, then `python check.py --inventory`.
+No task is open. Candidate: the next worked-example group ("The wall", controller, 4.4), section by section, then
+`python check.py --inventory`.
 Triangulation stays CLOSED (owner, 2026-10-18).
 
 ## Decisions from the owner (2026-10-17)

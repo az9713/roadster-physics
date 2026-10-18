@@ -86,6 +86,29 @@ PINS = [
     # PHYSICS.html (automatic match took a line with the same value but another quantity)
     ("PHYSICS.html", "x = −10.45 m — Gas used", 'L("flip", "gas release->burn", 1)', ""),
     ("PHYSICS.html", "338.9 bar at the burn →", 'S("tank_P_end_bar")', ""),
+    # PHYSICS.html 4.8 aerodynamics (2-digit values: the automatic match needs 3 digits or a shared word)
+    ("PHYSICS.html", "the car's weight spread over its", 'L("flip", "planform", 1)', ""),
+    ("PHYSICS.html", r"the sim's own drag areas: \(C_{Dz} =", 'L("par", "CDA_Z =", 1)', ""),
+    ("PHYSICS.html", r"= 0.851\) and \(C_{Dy} =", 'L("par", "CDA_Y =", 1)', ""),
+    ("PHYSICS.html", r"with aspect ratio \(A = W/L =", 'L("flip", "roll damping:", 4)', ""),
+    ("PHYSICS.html", r"A = W/L = 0.426\), so \(C_{L\alpha} =", 'L("flip", "roll damping:", 5)', ""),
+    ("PHYSICS.html", "102 N·m and 119 N·m:", 'L("flip", "roll damping:", 9)', ""),
+    ("PHYSICS.html", "102 N·m and 119 N·m: 0.39% and", 'L("flip", "roll damping:", 10)', ""),
+    ("PHYSICS.html", "the aerodynamic force at the CG. Each", 'L("flip", "aero moment per 0.1 m of centre", 1)', ""),
+    ("PHYSICS.html", r"of offset adds a moment of \(", 'L("flip", "aero moment per 0.1 m of centre", 1)', ""),
+    ("PHYSICS.html", r"F_{aero}|\): at most", 'L("flip", "aero moment per 0.1 m of centre", 2)', ""),
+    ("PHYSICS.html", "at most 93 N·m in the window,", 'L("flip", "term aero moment per 0.1", 2)', ""),
+    ("PHYSICS.html", r"The result is \(\Delta L_\infty/T =", 'L("flip", "d = 114 mm, NPR 536", 3)', ""),
+    ("PHYSICS.html", r"\(\Delta L_\infty/T = -0.10\%\) to \(", 'L("flip", "d = 23 mm, NPR 435", 3)', ""),
+    ("PHYSICS.html", r"to \(-0.55\%\), at most", 'abs(L("flip", "d = 23 mm, NPR 435", 4))', ""),
+    ("PHYSICS.html", r"\(-0.55\%\), at most 131 N on a", 'L("flip", "d = 23 mm, NPR 435", 5)', ""),
+    ("PHYSICS.html", "here the NPR is 435–536,", 'L("flip", "NPR 435-536", 6)', ""),
+    ("PHYSICS.html", "here the NPR is 435–536, 181 to", 'L("flip", "NPR 435-536", 7)', ""),
+    ("PHYSICS.html", "the term. In plain words. At", 'L("flip", "airspeed:", 1)', ""),
+    ("PHYSICS.html", "the term. In plain words. At 8–", 'L("flip", "airspeed:", 3)', ""),
+    ("PHYSICS.html", "air pushes on the car with about", 'L("flip", "drag in window", 2)', ""),
+    ("PHYSICS.html", "also resists the spin, but with about", 'L("flip", "roll damping:", 10)', ""),
+    ("PHYSICS.html", "they would change the roll by about", 'L("flip", "uncompensated aero", 1)', ""),
     # README.md (status line)
     ("README.md", "rides the 170° overhang upside down, lets go at about", 'S("release_time_s")', ""),
 ]
@@ -102,11 +125,15 @@ HISTORICAL = [
 ]
 # Sections that list facts quoted from the press and the videos (spec table, stunt and venue facts). A number there that
 # no tool prints is noted "cited source", not "no tool prints it".
+# An entry is (doc, section name) or (doc, text that ends right before the number).
 CITED = [("PROJECT.html", "2. Which stunt this is"), ("PROJECT.html", "5. The car"), ("PROJECT.html", "6. Venue and press"),
-         ("README.md", "Secondary sources")]
+         ("README.md", "Secondary sources"),
+         # PHYSICS.html 4.8: constants of the NASA TM 102268 free-air fit and the NPR range of the NASA TM 86825 data
+         ("PHYSICS.html", r"\right)^{"), ("PHYSICS.html", r"\mathrm{NPR}^{"), ("PHYSICS.html", r"\qquad K_\infty ="),
+         ("PHYSICS.html", "survey were taken at NPR"), ("PHYSICS.html", "survey were taken at NPR 1.45–")]
 LABEL_BEFORE = re.compile(r"(§|Fig\.|Figs\.|Fig|Part|Parts|Section|section|Proposition|Propositions|Prop\.|step|Step|steps|"
                           r"line|lines|item|Item|Items|items|Table|Eq\.|eq\.|No\.|#|r|v|Opus|Blender|KaTeX|Three\.js|"
-                          r"Python|ffmpeg|stage|Stage|Stages|task|Task|commit|Contents)\s*\(?$")
+                          r"Python|ffmpeg|stage|Stage|Stages|task|Task|commit|Contents|\bTM|\bp\.|Figs\. \d+ and)\s*\(?$")
 # Sim inputs that check.py reads by importing the sim module (main() does not run): (name, words the docs use near the
 # value, expression on the module, unit). The "par" output prints "<words> <name> = <value> <unit>" per entry.
 # auto_match pins a doc number to it when the value is equal (not rounded), a word is shared, and the unit appears in
@@ -391,14 +418,15 @@ def inventory(out):
                         row.update(expr=m, note="auto match (value + words)")
                 if row["expr"]:
                     row["output_line"] = line_of(row["expr"]) if row["expr"].count("(") == 1 else row["expr"]
-                    key = row["expr"][3:].split('"')[0] if row["expr"].startswith("L(") else "sim"
+                    key = m.group(1) if (m := re.search(r'L\("(\w+)"', row["expr"])) else "sim"
                     row["script"] = SCRIPTS["sim"] + " (constants)" if key == "par" else SCRIPTS[key]
                     row["check"] = "yes"
                     row["tol"] = row["tol"] or f"{tol_of(dec, shown):.3g}"
                     row["evidence"] = "HUD" if re.search(r"hud|free-fall fit", row["output_line"], re.I) else "model-only"
                 else:
                     row["evidence"] = classify(sentence)
-                    row["note"] = "cited source (press or video); no tool" if (doc, sec) in CITED else "no tool prints it"
+                    cited = (doc, sec) in CITED or any(c[0] == doc and ctx.rstrip().endswith(c[1]) for c in CITED)
+                    row["note"] = "cited source (press or video); no tool" if cited else "no tool prints it"
             rows.append(row)
         for name in re.findall(r"<!--TABLE:([\w.]+)-->", read_doc(doc)):
             rows.append(dict(id="", doc=doc, section="table", context=f"<!--TABLE:{name}-->", value="(table)", after="",
@@ -441,7 +469,7 @@ def label_of(text, secs, a, b, shown, v, dec):
 
 
 def in_math(text, a):
-    pre = text[max(0, a - 3000):a]
+    pre = text[:a]                                   # a window can cut off the "$$" that opens a display formula
     return pre.count("$$") % 2 == 1 or pre.rfind("\\(") > pre.rfind("\\)")
 
 
