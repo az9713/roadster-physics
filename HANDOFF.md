@@ -97,8 +97,8 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
 ## Next task
 1. DONE 2026-10-18: `out/broadcast_final_hud.mp4` (1.81 MB, 419 frames, 13.97 s, sound). Gauges vs `frames/ref/`:
    44.0 s 1.0 G/0.0 ft = real; 54.45 s 3.2 G/19.2 ft vs 3.2/18.7; 55.95 s 0.8 G/3.8 ft vs 1.4/3.6. PROJECT.html status row
-   -> done, §9 line written. **OPEN: the owner decides whether to commit `out/broadcast_final.mp4` (1.38 MB) and
-   `out/broadcast_final_hud.mp4` (1.81 MB)** (drafts are tracked).
+   -> done, §9 line written. Both final MP4s committed 2026-10-18 at the owner's request: `out/broadcast_final.mp4` (1.38 MB),
+   `out/broadcast_final_hud.mp4` (1.81 MB).
    NEW FINDING: shot B at 54.45 s matches the fitted wall points (y 170-560 px) but the floor/wall foot is ~140 px low
    (y ~715 vs ~578). Calib points for late B frames have no floor rows; `car_from_video` at 115.8 = x -177 m. Foot
    matches within ~10 px at 48.45/50.85 s, goes low at 53.45/54.45 s (`out/compare/stills_vs_pcmag.jpg`). Possible
