@@ -114,15 +114,16 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
 - 3c NOT RUN (rule: stop after a failed 3b). No `out/fit.json`; no reprojection check in `check.py` beyond the panel data.
 
 ## Next task
-Report task 3 to the owner (3a done, 3b failed with the numbers above, 3c not run) and get one decision: build a
-silhouette-centre car tracker for shot B (per-frame segmentation of the car, or an aspect-adaptive tracker with a model
-file, which needs a download) and rerun the 3b gate; or close the triangulation line and keep the planar model.
-Older items still open: tell the owner the image findings (car at/past lip at 52.25; +y drift; jets at 53.45 vs T_BURN
-53.95; shot B floor ~140 px low after 53 s) and the offer of `short` as the render default.
+Triangulation line CLOSED by the owner 2026-10-18: keep the planar y = 0 model, no sim refit, task 3c will not run,
+no new car tracker. Do not reopen unless the owner asks. Open items: tell the owner the image findings (car at/past
+lip at 52.25; +y drift; jets at 53.45 vs T_BURN 53.95), and ask whether `short` should be the render default (B wall
+edges favour `hud`; the car-at-lip image favours `short`). The 1,331 claims in `claims.csv` with no producing script
+are the remaining gap toward "every published number checked by a tool".
 
 ## Decisions from the owner (2026-10-17)
 - Short-overhang variant as a switch (done). ElevenLabs SFX allowed, cap ~10 generations (8 used).
 - Sim refit only if car rms <= 5 px in R1 and B and no frame > 15 px (failed -> not refitted).
+- 2026-10-18: triangulation line closed after task 3b failed; planar model kept (PROJECT.html §9).
 - One Cycles final of `broadcast` (done 2026-10-18, see Outcome); `coverage` as EEVEE only (done). Agent judges the look itself.
 
 ## Session-transient scratch (gone after clear; regenerate only if needed)
