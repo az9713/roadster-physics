@@ -109,6 +109,36 @@ PINS = [
     ("PHYSICS.html", "air pushes on the car with about", 'L("flip", "drag in window", 2)', ""),
     ("PHYSICS.html", "also resists the spin, but with about", 'L("flip", "roll damping:", 10)', ""),
     ("PHYSICS.html", "they would change the roll by about", 'L("flip", "uncompensated aero", 1)', ""),
+    # PHYSICS.html "The wall" (Figs. 1 and 2 and the paragraphs under them)
+    ("PHYSICS.html", "Orange: the surface,", 'L("par", "H_CG =", 1)', ""),
+    ("PHYSICS.html", "The release point (pink) is", 'abs(S("release_x_m"))', ""),
+    ("PHYSICS.html", "m behind the foot, with the CG", 'L("mc", "release CG z", 1)', ""),
+    ("PHYSICS.html", "The grey band from 51.31 s is the", 'S("release_pitch_deg")', ""),
+    ("PHYSICS.html", "Reading Fig. 2. The speed is about", 'L("mc", "speed: entry curve", 2)', ""),
+    ("PHYSICS.html", "m/s in the entry curve and falls to", 'L("mc", "speed: entry curve", 5)', ""),
+    ("PHYSICS.html", "4.6 m/s on the overhang (", 'L("mc", "speed: entry curve", 3)', ""),
+    ("PHYSICS.html", "4.6 m/s on the overhang (49.0–", 'L("mc", "speed: entry curve", 4)', ""),
+    ("PHYSICS.html", "(49.0–50.5 s). Up to", 'L("mc", "up to 51.0 s:", 1)', ""),
+    ("PHYSICS.html", "s the minimum suction peaks at", 'L("mc", "up to 51.0 s:", 2)', ""),
+    ("PHYSICS.html", "against 4,700 kgf available:", 'L("mc", "up to 51.0 s:", 3)', ""),
+    ("PHYSICS.html", "80% of it. The median from", 'L("mc", "up to 51.0 s:", 6)', ""),
+    ("PHYSICS.html", "80% of it. The median from 48.5 to", 'L("mc", "up to 51.0 s:", 7)', ""),
+    ("PHYSICS.html", "The median from 48.5 to 51.0 s is", 'L("mc", "up to 51.0 s:", 8)', ""),
+    ("PHYSICS.html", "kgf. Wheel power up to", 'L("mc", "up to 51.0 s:", 1)', ""),
+    ("PHYSICS.html", "Wheel power up to 51.0 s peaks at", 'L("mc", "up to 51.0 s:", 5)', ""),
+    ("PHYSICS.html", "Example: the HUD altitude jumps from", 'L("mc", "HUD altitude jump", 2)', ""),
+    ("PHYSICS.html", "the HUD altitude jumps from 48.1 to", 'L("mc", "HUD altitude jump", 4)', ""),
+    ("PHYSICS.html", "jumps from 48.1 to 50.6 ft between", 'L("mc", "HUD altitude jump", 1)', ""),
+    ("PHYSICS.html", "to 50.6 ft between 50.2 and", 'L("mc", "HUD altitude jump", 3)', ""),
+    ("PHYSICS.html", r"s lag shift, \(a\) rises to", 'L("mc", "saw sample 49.8", 2)', ""),
+    ("PHYSICS.html", "rises to 6.4 m/s² at", 'L("mc", "saw sample 49.8", 1)', ""),
+    ("PHYSICS.html", "m/s² at 49.8 s and falls to", 'L("mc", "saw sample 50.0", 2)', ""),
+    ("PHYSICS.html", "and falls to −3.2 m/s² at", 'L("mc", "saw sample 50.0", 1)', ""),
+    ("PHYSICS.html", "s. The suction need follows:", 'L("mc", "saw sample 49.8", 3)', ""),
+    ("PHYSICS.html", "The suction need follows: 3,779 kgf, then", 'L("mc", "saw sample 50.0", 3)', ""),
+    ("PHYSICS.html", "The ceiling values are noise. On a", 'S("release_pitch_deg")', ""),
+    ("PHYSICS.html", "noise. On a 170° ceiling, one", 'L("mc", "0.1 ft step", 1)', ""),
+    ("PHYSICS.html", "acceleration 10.62 m/s²),", 'S("wall_peak_power_kW")', ""),
     # README.md (status line)
     ("README.md", "rides the 170° overhang upside down, lets go at about", 'S("release_time_s")', ""),
 ]
@@ -122,6 +152,9 @@ HISTORICAL = [
     ("PHYSICS.html", "text", "The change log recorded"),
     ("PHYSICS.html", "text", "At n = 1.25 the run gave"),
     ("PHYSICS.html", "text", "The first full run touched down at"),
+    # "end" = the text that ends right before the number (a "text" entry covers the next 400 characters)
+    ("PHYSICS.html", "end", "gives the typical overhang need as about"), ("PHYSICS.html", "end", "kgf and the peak power as about"),
+    ("PHYSICS.html", "end", "kW; those values were sampled every"),
 ]
 # Sections that list facts quoted from the press and the videos (spec table, stunt and venue facts). A number there that
 # no tool prints is noted "cited source", not "no tool prints it".
@@ -130,7 +163,9 @@ CITED = [("PROJECT.html", "2. Which stunt this is"), ("PROJECT.html", "5. The ca
          ("README.md", "Secondary sources"),
          # PHYSICS.html 4.8: constants of the NASA TM 102268 free-air fit and the NPR range of the NASA TM 86825 data
          ("PHYSICS.html", r"\right)^{"), ("PHYSICS.html", r"\mathrm{NPR}^{"), ("PHYSICS.html", r"\qquad K_\infty ="),
-         ("PHYSICS.html", "survey were taken at NPR"), ("PHYSICS.html", "survey were taken at NPR 1.45–")]
+         ("PHYSICS.html", "survey were taken at NPR"), ("PHYSICS.html", "survey were taken at NPR 1.45–"),
+         # PHYSICS.html "The wall": the published motor power
+         ("PHYSICS.html", "kW, against more than")]
 LABEL_BEFORE = re.compile(r"(§|Fig\.|Figs\.|Fig|Part|Parts|Section|section|Proposition|Propositions|Prop\.|step|Step|steps|"
                           r"line|lines|item|Item|Items|items|Table|Eq\.|eq\.|No\.|#|r|v|Opus|Blender|KaTeX|Three\.js|"
                           r"Python|ffmpeg|stage|Stage|Stages|task|Task|commit|Contents|\bTM|\bp\.|Figs\. \d+ and)\s*\(?$")
@@ -392,6 +427,7 @@ def inventory(out):
         text, secs = doc_text(doc, read_doc(doc))
         hist_text = [h[2] for h in HISTORICAL if h[0] == doc and h[1] == "text"]
         hist_secs = [h[2] for h in HISTORICAL if h[0] == doc and h[1] == "section"]
+        hist_end = [h[2] for h in HISTORICAL if h[0] == doc and h[1] == "end"]
         for a, b, shown, v, dec, label in tokens(text):
             label = label or label_of(text, secs, a, b, shown, v, dec)
             sec = section_at(secs, a)
@@ -402,7 +438,8 @@ def inventory(out):
             sentence = text[max(0, text.rfind(". ", 0, a) + 1 if text.rfind(". ", 0, a) > a - 400 else a - 400):b + 200]
             if label:
                 row["note"] = label
-            elif sec in hist_secs or any(h in text[max(0, a - 400):a] for h in hist_text):
+            elif (sec in hist_secs or any(h in text[max(0, a - 400):a] for h in hist_text)
+                  or any(ctx.rstrip().endswith(h) for h in hist_end)):
                 row["note"] = "historical (change log or quoted old run); not compared"
                 row["evidence"] = classify(sentence)
             else:

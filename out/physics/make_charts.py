@@ -77,6 +77,20 @@ print(f"before 170: peak speed {P1['v'][pre].max():.2f} m/s, peak power {P1['pow
 ipk = np.argmax(P1["F_s_min"])
 print(f"overall peak suction {P1['F_s_min'][ipk]/S.G0:.0f} kgf at {P1['t'][ipk]:.2f} s (v {P1['v'][ipk]:.2f}, a {P1['a'][ipk]:.2f})")
 print(f"0.1 ft step on 170 deg = {0.1*S.FT/np.sin(np.radians(10)):.3f} m of track")
+print(f"release CG z = {P1['pos'][-1][2]:.2f} m above the road")
+ovh = (P1["t"] >= 49.0 - 1e-6) & (P1["t"] <= 50.5 + 1e-6)
+print(f"speed: entry curve (pitch < 90 deg) peak {P1['v'][P1['th'] < np.radians(90)].max():.2f} m/s; "
+      f"overhang 49.0-50.5 s min {P1['v'][ovh].min():.2f} m/s")
+u51 = P1["t"] < 51.0 - 1e-6                  # "up to 51.0 s": before the read-noise band of the 170 deg ceiling
+mid = u51 & (P1["t"] >= 48.5 - 1e-6)
+print(f"up to 51.0 s: peak suction {P1['F_s_min'][u51].max()/S.G0:.0f} kgf = "
+      f"{P1['F_s_min'][u51].max()/S.G0/S.SUCTION_MAX_KG*100:.0f}% of {S.SUCTION_MAX_KG:.0f} kgf, "
+      f"peak power {P1['power'][u51].max()/1e3:.0f} kW; median 48.5-51.0 s {np.median(P1['F_s_min'][mid])/S.G0:.0f} kgf")
+for tt in (49.8, 50.0):
+    i = np.argmin(abs(P1["t"] - tt))
+    print(f"saw sample {tt:.1f} s: a {P1['a'][i]:.2f} m/s2, suction {P1['F_s_min'][i]/S.G0:.0f} kgf")
+i, j = np.argmin(abs(ht - 50.2)), np.argmin(abs(ht - 50.3))
+print(f"HUD altitude jump: {ht[i]:.1f} s {ha[i]:.1f} ft -> {ht[j]:.1f} s {ha[j]:.1f} ft")
 
 # HUD lag: free-fall fit (piecewise: straight 170 deg climb before release, parabola after)
 sel = (ht >= 52.2 - 1e-9) & (ht <= 53.95 + 1e-9)

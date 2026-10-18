@@ -513,7 +513,7 @@ page). <code>python check.py</code> found them; §8 now shows the current run. T
 <h3 id="r-wall">The wall</h3>
 <figure><img src="out/physics/wall_profile.png" alt="Wall profile in the x-z plane with the CG path, the surface, pitch markers at 30 to 170 degrees and the release point" width="1170" height="572">
 <figcaption>Fig. 1. The rebuilt wall. Teal: the CG path from the HUD (<a href="#s1">§1</a>). Orange: the surface, 0.45 m
-below the CG path along the normal. The release point (pink) is 10.45 m behind the foot, with the CG 21.15 m above the road. The overhang
+below the CG path along the normal. The release point (pink) is 10.45 m behind the foot, with the CG 21.21 m above the road. The overhang
 reaches back over the approach road.</figcaption></figure>
 
 <figure><img src="out/physics/wall_loads.png" alt="Three panels against time on the wall: speed, minimum suction against the 4,700 kgf available, and wheel power" width="1040" height="910">
@@ -525,7 +525,7 @@ Up to 51.0 s the minimum suction peaks at 3,779 kgf, against 4,700 kgf available
 power, limits the climb.</p>
 <p><b>Why the suction curve is a saw.</b> The swings come from the acceleration \(a = f''(t)\), not from the wall. Example:
 the HUD altitude jumps from 48.1 to 50.6 ft between 50.2 and 50.3 s. After the 0.30 s lag shift, \(a\) rises to
-6.4 m/s² at 49.8 s and falls to −3.2 m/s² at 50.0 s. The suction need follows: 3,777 kgf, then 1,578 kgf.</p>
+6.4 m/s² at 49.8 s and falls to −3.2 m/s² at 50.0 s. The suction need follows: 3,779 kgf, then 1,579 kgf.</p>
 <p><b>The ceiling values are noise.</b> On a 170° ceiling, one 0.1 ft altitude step is 0.176 m of track. The sim's peaks
 there, 5,003 kgf of suction at 51.40 s (speed 10.14 m/s, acceleration 10.62 m/s²), 294 kW and 10.46 m/s, are in this
 band. They are not physical results. PROJECT.html §4.1 gives the typical overhang need as about 3,300 kgf and the peak

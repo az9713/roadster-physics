@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-18 (owner decisions; claims gap: first pass ee8cb60, PHYSICS 4.8 dc2dd7c). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18, late session (claims pass "The wall" done but NOT committed; owner stopped the claims passes). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -73,7 +73,8 @@ Purpose: measure the real car path after release from two views (shot B + slow-m
   mix `python out/sfx/mix.py` -> `out/sfx/broadcast_mix.wav`. HUD: `python blender/hud_mux.py <in.mp4> <out.mp4>`.
 - CYCLES FINAL DONE 2026-10-18 07:58 (3 runs, about 8 h of render): `out/broadcast_final.mp4`, 1280x720, 30 fps,
   419 frames (seg00 21 + seg01 398, same as the EEVEE draft; "420" in older notes was off by one), 13.97 s, 1.38 MB.
-  Untracked in git (the drafts are tracked). Frames in `out/edl_broadcast_final/segNN/`. Runs 1 and 2 stopped at frames
+  LATEST VIDEO: `out/broadcast_final_hud.mp4` (2026-10-18 09:06, final + HUD + sound, 13.97 s). Both finals are
+  tracked in git (commit 099640d). Frames in `out/edl_broadcast_final/segNN/`. Runs 1 and 2 stopped at frames
   342 and 410 with no crash file and no Windows event (cause not proven; PROJECT.html §9 2026-10-18). Logs:
   `out/logs/edl_broadcast_final.run1.log`, `.run2.log`, current `.log`. Chain: `out/logs/render_all.sh` (resumable).
 
@@ -128,15 +129,31 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
   the pin text (end of the 60-char context) specific: "In plain words. At" also hit a §6 card (mismatch 543 vs 8.13).
   Then `python check.py` (full, refreshes outputs), `--inventory`, `python check.py`, `--rev 099640d` (expect the 14 +
   2 anchors + any doc text you changed). Compare old/new `claims.csv` by (doc, context, value): 0 checked rows lost.
-- Left (not done), largest worked-example groups now: PHYSICS "The wall" 33, "Timing and the controller" 28, 4.4 28;
-  reader for `out/camera_calib.json` (~6 numbers); HUD/video readings in prose stay unchecked (inputs).
+- "The wall" DONE (2026-10-18, not committed yet): 6 output lines in `make_charts.py`, 29 `PINS`, 1 `CITED`, new
+  HISTORICAL kind "end" (text right before the number; the 400-char "text" kind also caught Fig. 3 numbers).
+  Doc fixes: CG at release 21.15 -> 21.21 m, saw suction 3,777/1,578 -> 3,779/1,579 kgf. Checked 426 -> 455, no tool 691 -> 658.
+  Open question for the owner: sim CG z at 52.25 s (21.21 m, the Fig. 1 dot) is 0.06 m above z_rel + H_CG (21.15 m).
+- STOPPED by the owner (2026-10-18): "we can skip checking every number". No more section passes unless asked.
+  What is left, for reference: 658 rows "no tool prints it" in 49 sections = 304 derived (35 sections; largest 4.4 28,
+  4.9 28, "The nozzles" 22) + 354 HUD/video readings (inputs). Of all 2,611 rows: 751 historical, 694 labels, 53 cited, 455 checked.
 
 ## Next task
-No task is open. Candidate: the next worked-example group (PHYSICS "The wall" 33, "Timing and the controller" 28,
-4.4 28), one section per pass, as in "How a section pass goes" above. Ask the owner which one; commit only on request.
-Git state (verified 2026-10-18): last work commit dc2dd7c, then the commit of this HANDOFF refresh; pushed; clean except untracked `.serena/` (editor config, keep out).
-Two "Teleport auto-stash" entries remain (stash@{1} = the claims-gap work, now in ee8cb60; stash@{0} = `.serena/`
-config). Drop them only when the owner says so.
+**Start here: ask the owner to commit (or discard) "The wall" pass.** Before a commit: `python check.py` (expect
+455 agree, 0 do not). Put the owner's decision "claims passes stopped" in the PROJECT.html §9 change log in the same
+commit, then `python check.py --inventory` and `python check.py` again (§9 is historical; nothing checked moves).
+Then the open owner decisions, one line each (the owner asked for none of them yet):
+1. The 0.06 m gap: sim CG z at 52.25 s = 21.21 m (Fig. 1 dot) vs `wall_height_release_m` 20.696 + `H_CG` 0.45 = 21.15 m.
+   Cause not found (z_rel comes from `_hud_alt_m()`, lag-corrected). Investigate or accept the caption change.
+2. impeccable hook flag "aphoristic-cadence" in PHYSICS.html (attribution unknown, predates this session): rewrite
+   or ignore-value. Left standing.
+3. Delete `out/triangulation.json` (tracked, invalid data)? Recommended.
+4. Rename the remote: `git remote set-url origin https://github.com/az9713/roadster-physics.git`.
+5. Drop the two stashes? (stash@{1} = claims work, already in ee8cb60; stash@{0} = `.serena/` config.)
+Known gaps, no action needed: render stops at frames 342/410 (cause not proven); no interactive Chrome console check
+of PHYSICS.html; HUD G gauge may lag 0.3-0.5 s (lift jets seen at 53.45, sim burn 53.95).
+Git state (verified 2026-10-18): HEAD = origin/main = d1649ef. NOT committed: HANDOFF.md, PHYSICS.html, PROJECT.html,
+check.py, claims.csv, out/check_outputs.json, out/physics/make_charts.py. Untracked `.serena/` (editor config, keep out).
+This HANDOFF.md is on disk only until that commit.
 Triangulation stays CLOSED (owner, 2026-10-18).
 
 ## Decisions from the owner (2026-10-17)
@@ -156,6 +173,11 @@ The session scratchpad (temporary, not in the repo):
 2026-10-18 claims 4.8 scratch: `claims_pre48.csv` (copy before the pass) and an inline Python diff keyed by
 (doc, context, value). Regenerate: `git show ee8cb60:claims.csv` gives the "before" file.
 
+2026-10-18 "The wall" scratch: `wall_probe.py` (imports the sim like make_charts.py, prints P1 speed/suction/power
+on a 0.25 s grid and window statistics; superseded by the 6 make_charts.py lines) and `claims_prewall.csv` (before
+copy; regenerate with `git show d1649ef:claims.csv`). Status page for the owner (private artifact):
+https://claude.ai/artifact/A5CmgY8eMiKwgJk7RdXD2K (objective, journey, state as of this session; not a source of truth).
+
 2026-10-18 task 3b scratch: `trackb*.py` (frame alignment, NCC/MIL/CSRT trackers), `bvid/` (108 decoded frames),
 `cvc/` (opencv-contrib for CSRT), `track_sheet*.png`. Regenerate: `ffmpeg -ss 113.2 -i video_files/quRC56Z0EJw.mp4 -t 3.6
 -vsync 0 bvid/f_%04d.png`; trackers start at CAR_B[113.6] and run frame by frame to frame 96 (= PCMag 116.4).
@@ -173,6 +195,9 @@ The session scratchpad (temporary, not in the repo):
 - 2026-10-18 claims session: resumed via `/remote-control`; the working tree was restored from a teleport stash AFTER
   the first read of this file, so the first read was stale. Re-run `git status` before trusting HANDOFF.md.
   `handoff-after-clear` refreshed this file at dc2dd7c. No other skill used for the 4.8 pass.
+- 2026-10-18 "The wall" session: resumed from this file after /clear (git status re-run first: matched). Skills used:
+  `handoff-after-clear` (this refresh); Artifact quickstart page guidance for the status page. Advisor consulted once
+  before the report (led to the §9 wording fixes: "lag-corrected", "computed", "six lines"). No other skill used.
 - Local `origin` URL still says `roadster-simulation`; the GitHub repo is now `roadster-physics` (commit 7e281bc).
   Push works through GitHub's redirect.
 
