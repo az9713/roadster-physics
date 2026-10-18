@@ -98,9 +98,14 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
    `seg01/0409.png` at 15:15:04, left a 0-byte `seg01/0410.png`, and `out/logs/chain.log` got "final exit 1" at 15:18:43.
    PID 20012 is gone. The last line of `out/logs/edl_broadcast_final.log` is a normal "Saved" line: no error text.
    409 of 420 frames done, 11 left (~4.7 min/frame, ~1 h). No `out/broadcast_final.mp4`. Run 1 stopped the same way at
-   frame 341 (cause not proven; see `out/logs/edl_broadcast_final.run1.log`). A session card was proposed 2026-10-18
-   ("Diagnose failed Cycles final render (exit 1)"); check whether it ran. Find the cause first (crash file, Windows
-   event log near 15:15-15:19, VRAM on frame 410), then ask the owner before rerunning `out/logs/render_all.sh` detached.
+   frame 341 (cause not proven; see `out/logs/edl_broadcast_final.run1.log`).
+   DIAGNOSED 2026-10-18 (cause still not proven; PROJECT.html §9 has the entry): no crash file; Windows System and
+   Application logs have NO event 15:10-15:25 (no 4101 driver reset, no 1000 app error, no 2004 resource exhaustion);
+   standby only at 16:05 (lid). Both runs were started by `Start-Process` (hidden, detached, session f0947439), so a
+   Claude Code exit does not explain them. Run 1 left no "final exit" line (bash parent also died); run 2 left
+   "final exit 1" 3.6 min into frame 410. Exit 1 with no log text matches an external forced stop (Task Manager
+   "End task", `taskkill /F`). No project transcript kills Blender. VRAM idle now 247/4096 MiB.
+   NEXT: ask the owner (did they end it? rerun?) before rerunning `out/logs/render_all.sh` detached (~1 h for 11 frames).
 1. When `out/broadcast_final.mp4` exists: `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`.
    Check 3 frames (44.0, 54.45, 55.95) against `frames/ref/`. Update PROJECT.html (status table row "Blender
    photoreal scene" -> done, §9 entry with render time and file).
