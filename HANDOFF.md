@@ -105,7 +105,10 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
    Claude Code exit does not explain them. Run 1 left no "final exit" line (bash parent also died); run 2 left
    "final exit 1" 3.6 min into frame 410. Exit 1 with no log text matches an external forced stop (Task Manager
    "End task", `taskkill /F`). No project transcript kills Blender. VRAM idle now 247/4096 MiB.
-   NEXT: ask the owner (did they end it? rerun?) before rerunning `out/logs/render_all.sh` detached (~1 h for 11 frames).
+   RUN 3 started 2026-10-18 07:10:52 at the owner's request: bash PID 11928 (`out/logs/chain.pid`), Blender PID 260.
+   Run-2 log kept as `out/logs/edl_broadcast_final.run2.log`. EEVEE steps skipped (exit 0); frame 410 saved at
+   +4:47. Done when `out/logs/chain.log` ends "final exit 0" and `out/broadcast_final.mp4` exists (~08:05). If it
+   stops again, the cause is not proven: check the same evidence (crash file, event log, standby) first.
 1. When `out/broadcast_final.mp4` exists: `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`.
    Check 3 frames (44.0, 54.45, 55.95) against `frames/ref/`. Update PROJECT.html (status table row "Blender
    photoreal scene" -> done, §9 entry with render time and file).
