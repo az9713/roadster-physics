@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-18 (owner decisions; claims gap work). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18 (owner decisions; claims gap: first pass ee8cb60, PHYSICS 4.8 dc2dd7c). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -122,13 +122,21 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
 - 4.8 aero DONE (2026-10-18): 22 PHYSICS pins in `PINS`, 1 print line in `flip.py` (NPR ratio 181-370), `in_math` counts
   `$$` from the text start (the 3,000-char window cut a display opener), citation labels `TM` / `p.` / `Figs. N and`,
   `CITED` takes (doc, text ending) too. Doc edits: 180 -> 181 (4.8, 4.9), drag "less than 5%" -> "about 4%".
-  Checked 400 -> 426 (all agree), no tool 752 -> 691. 4.8 left: "1 bar" (script uses 101,325 Pa).
+  Checked 400 -> 426 (all agree), no tool 752 -> 691. 4.8 left: "1 bar" (script uses 101,325 Pa). Commit dc2dd7c.
+- How a section pass goes: list its "no tool prints it" rows from `claims.csv`; pin each to a printed line
+  (`L("flip"|"mc"|"par", "line text", n)`; `abs(...)` allowed); add a print line only when no line has the value; make
+  the pin text (end of the 60-char context) specific: "In plain words. At" also hit a §6 card (mismatch 543 vs 8.13).
+  Then `python check.py` (full, refreshes outputs), `--inventory`, `python check.py`, `--rev 099640d` (expect the 14 +
+  2 anchors + any doc text you changed). Compare old/new `claims.csv` by (doc, context, value): 0 checked rows lost.
 - Left (not done), largest worked-example groups now: PHYSICS "The wall" 33, "Timing and the controller" 28, 4.4 28;
   reader for `out/camera_calib.json` (~6 numbers); HUD/video readings in prose stay unchecked (inputs).
 
 ## Next task
-No task is open. Candidate: the next worked-example group ("The wall", controller, 4.4), section by section, then
-`python check.py --inventory`.
+No task is open. Candidate: the next worked-example group (PHYSICS "The wall" 33, "Timing and the controller" 28,
+4.4 28), one section per pass, as in "How a section pass goes" above. Ask the owner which one; commit only on request.
+Git state (verified 2026-10-18): last work commit dc2dd7c, then the commit of this HANDOFF refresh; pushed; clean except untracked `.serena/` (editor config, keep out).
+Two "Teleport auto-stash" entries remain (stash@{1} = the claims-gap work, now in ee8cb60; stash@{0} = `.serena/`
+config). Drop them only when the owner says so.
 Triangulation stays CLOSED (owner, 2026-10-18).
 
 ## Decisions from the owner (2026-10-17)
@@ -145,6 +153,9 @@ The session scratchpad (temporary, not in the repo):
 `r1_rough.py` (first R1 camera guess), `lips.png`. The durable record is the dicts and functions in `blender/triangulate.py`.
 2026-10-17 report session: `fitlag.py`, `sens.py` (lag fit, sensitivity) — superseded by `out/physics/make_charts.py`.
 
+2026-10-18 claims 4.8 scratch: `claims_pre48.csv` (copy before the pass) and an inline Python diff keyed by
+(doc, context, value). Regenerate: `git show ee8cb60:claims.csv` gives the "before" file.
+
 2026-10-18 task 3b scratch: `trackb*.py` (frame alignment, NCC/MIL/CSRT trackers), `bvid/` (108 decoded frames),
 `cvc/` (opencv-contrib for CSRT), `track_sheet*.png`. Regenerate: `ffmpeg -ss 113.2 -i video_files/quRC56Z0EJw.mp4 -t 3.6
 -vsync 0 bvid/f_%04d.png`; trackers start at CAR_B[113.6] and run frame by frame to frame 96 (= PCMag 116.4).
@@ -159,6 +170,9 @@ The session scratchpad (temporary, not in the repo):
   `handoff-after-clear` refreshed this file.
 - 2026-10-18: `be-ambitious` skill used to write the task 3 plan (full text of 3a-3c in HANDOFF.md at commit 099640d).
   Run the same day: 3a done, 3b failed, 3c not run (see "Task 3 outcome").
+- 2026-10-18 claims session: resumed via `/remote-control`; the working tree was restored from a teleport stash AFTER
+  the first read of this file, so the first read was stale. Re-run `git status` before trusting HANDOFF.md.
+  `handoff-after-clear` refreshed this file at dc2dd7c. No other skill used for the 4.8 pass.
 - Local `origin` URL still says `roadster-simulation`; the GitHub repo is now `roadster-physics` (commit 7e281bc).
   Push works through GitHub's redirect.
 
