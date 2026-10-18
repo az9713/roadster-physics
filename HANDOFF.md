@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-18, late session (claims pass "The wall" done but NOT committed; owner stopped the claims passes). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18, late session (claims pass "The wall" committed a76387e; owner stopped the claims passes). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -129,7 +129,7 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
   the pin text (end of the 60-char context) specific: "In plain words. At" also hit a §6 card (mismatch 543 vs 8.13).
   Then `python check.py` (full, refreshes outputs), `--inventory`, `python check.py`, `--rev 099640d` (expect the 14 +
   2 anchors + any doc text you changed). Compare old/new `claims.csv` by (doc, context, value): 0 checked rows lost.
-- "The wall" DONE (2026-10-18, not committed yet): 6 output lines in `make_charts.py`, 29 `PINS`, 1 `CITED`, new
+- "The wall" DONE (2026-10-18, commit a76387e): 6 output lines in `make_charts.py`, 29 `PINS`, 1 `CITED`, new
   HISTORICAL kind "end" (text right before the number; the 400-char "text" kind also caught Fig. 3 numbers).
   Doc fixes: CG at release 21.15 -> 21.21 m, saw suction 3,777/1,578 -> 3,779/1,579 kgf. Checked 426 -> 455, no tool 691 -> 658.
   Open question for the owner: sim CG z at 52.25 s (21.21 m, the Fig. 1 dot) is 0.06 m above z_rel + H_CG (21.15 m).
@@ -138,10 +138,8 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
   4.9 28, "The nozzles" 22) + 354 HUD/video readings (inputs). Of all 2,611 rows: 751 historical, 694 labels, 53 cited, 455 checked.
 
 ## Next task
-**Start here: ask the owner to commit (or discard) "The wall" pass.** Before a commit: `python check.py` (expect
-455 agree, 0 do not). Put the owner's decision "claims passes stopped" in the PROJECT.html §9 change log in the same
-commit, then `python check.py --inventory` and `python check.py` again (§9 is historical; nothing checked moves).
-Then the open owner decisions, one line each (the owner asked for none of them yet):
+No task is open. "The wall" pass and the owner's "claims passes stopped" decision are committed (a76387e, pushed).
+Open owner decisions, one line each (the owner asked for none of them yet):
 1. The 0.06 m gap: sim CG z at 52.25 s = 21.21 m (Fig. 1 dot) vs `wall_height_release_m` 20.696 + `H_CG` 0.45 = 21.15 m.
    Cause not found (z_rel comes from `_hud_alt_m()`, lag-corrected). Investigate or accept the caption change.
 2. impeccable hook flag "aphoristic-cadence" in PHYSICS.html (attribution unknown, predates this session): rewrite
@@ -151,9 +149,10 @@ Then the open owner decisions, one line each (the owner asked for none of them y
 5. Drop the two stashes? (stash@{1} = claims work, already in ee8cb60; stash@{0} = `.serena/` config.)
 Known gaps, no action needed: render stops at frames 342/410 (cause not proven); no interactive Chrome console check
 of PHYSICS.html; HUD G gauge may lag 0.3-0.5 s (lift jets seen at 53.45, sim burn 53.95).
-Git state (verified 2026-10-18): HEAD = origin/main = d1649ef. NOT committed: HANDOFF.md, PHYSICS.html, PROJECT.html,
-check.py, claims.csv, out/check_outputs.json, out/physics/make_charts.py. Untracked `.serena/` (editor config, keep out).
-This HANDOFF.md is on disk only until that commit.
+6. `.serena/` = files of the Serena MCP server (user scope in `~/.claude.json`, `--project-from-cwd`, unused here).
+   Options told to the owner: add it to `.gitignore`, `claude mcp remove serena -s user`, or leave it.
+Git state (verified 2026-10-18): work commit a76387e, then the commit of this HANDOFF fix; pushed; clean except
+untracked `.serena/`.
 Triangulation stays CLOSED (owner, 2026-10-18).
 
 ## Decisions from the owner (2026-10-17)
