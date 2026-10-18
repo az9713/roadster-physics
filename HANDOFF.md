@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-18 09:20. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18 (task 3 run). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -94,42 +94,31 @@ implies I_xx <= 351 kg m2 or a filtered gauge; aero < 0.5 % of the jet moment; R
 Pages 200 verified (page + flip_film.png). Not done: interactive Chrome console check (headless DOM check passed: 507 KaTeX, 0 errors).
 Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 102268 (Kuhn et al. 1991, p. 5).
 
+## Task 3 outcome (2026-10-18, run without the owner in the loop)
+- 3a DONE (commit d0a000f). `check.py` + `claims.csv` (every number in PROJECT.html, PHYSICS.html, README.md; 203 rows
+  checked against fresh output, the rest labelled: label / historical / no tool, evidence HUD / footage / model-only / none).
+  `python check.py` = full (24 s: sim, make_charts.py, flip.py; refreshes `out/check_outputs.json`). `--fast` = sim only
+  (4.3 s), used by `.git/hooks/pre-commit` (install: `python check.py --install-hook`; the hook file is not tracked).
+  `--rev REV` checks old docs; `--inventory` rebuilds `claims.csv` (edit PINS/HISTORICAL/NOAUTO in check.py, not the CSV).
+  After a doc edit near a checked number, run `python check.py --inventory` or the hook fails with "anchor missing".
+  Proof: `--rev 099640d` flags 14 stale numbers (PROJECT.html §8 table + §8.1); fixed; now 203 agree, 0 do not.
+  setup-pre-commit skill not used (Husky/Prettier need Node; no package.json; Prettier would reformat the docs).
+  replay.html "Video check" panel: sim car on 15 B + 27 R1 frames. Cameras cached by `python blender/cache_cameras.py`
+  (`out/cameras_tri.json`, 4 s); data `python blender/reproj.py` -> `out/reproj.js`. Sim vs by-eye car: B rms 268.3 px,
+  R1 rms 216.4 px. The panel has hooks for a fit path (`fit`, `fit_res`, `fit_summary` fields) for a later 3c.
+- 3b FAILED (commit aabaff0). Gate: track to PCMag 116.4 with median <= ~10 px vs `CAR_B`. Best: CSRT 140x90 median
+  22.7 px (max 76.0), MIL 140x90 median 23.6 px (max 40.0, y within 4 px, x 17-40 px left from 114.8: the fixed-aspect
+  box slides to the nose as the car grows from ~75 px end-on to ~150 px side-on). Stills = decoded frames 12, 18 ... 96
+  of the 720p file from 113.2 s (exact match). CSRT came from opencv-contrib installed into the session scratch only.
+  1080p not downloaded (needs the owner's approval; resolution is not the failure cause).
+- 3c NOT RUN (rule: stop after a failed 3b). No `out/fit.json`; no reprojection check in `check.py` beyond the panel data.
+
 ## Next task
-1. DONE 2026-10-18: `out/broadcast_final_hud.mp4` (1.81 MB, 419 frames, 13.97 s, sound). Gauges vs `frames/ref/`:
-   44.0 s 1.0 G/0.0 ft = real; 54.45 s 3.2 G/19.2 ft vs 3.2/18.7; 55.95 s 0.8 G/3.8 ft vs 1.4/3.6. PROJECT.html status row
-   -> done, §9 line written. Both final MP4s committed 2026-10-18 at the owner's request: `out/broadcast_final.mp4` (1.38 MB),
-   `out/broadcast_final_hud.mp4` (1.81 MB).
-   NEW FINDING: shot B at 54.45 s matches the fitted wall points (y 170-560 px) but the floor/wall foot is ~140 px low
-   (y ~715 vs ~578). Calib points for late B frames have no floor rows; `car_from_video` at 115.8 = x -177 m. Foot
-   matches within ~10 px at 48.45/50.85 s, goes low at 53.45/54.45 s (`out/compare/stills_vs_pcmag.jpg`). Possible
-   cause of the B residuals in the failed gate. Fix = floor points in `calib_cameras.py` + shot B re-render: owner's call.
-   FINDING (2026-10-18, owner saw "no difference"): final vs `out/broadcast_draft.mp4` luma PSNR is 39.6-42.0 dB per
-   second for 1-9 s (near identical: same scene, lamps, cameras; only edge and noise differences) and 22.2-22.6 dB for
-   11-13 s. There the EEVEE draft cloud is thin and dithered (the car shows through); the Cycles cloud (64 samples,
-   denoised, volume_step_rate 2.0, `build_scene.py:646-648`) is dense, smooth and hides the car. Against the real
-   frame `frames/ref/pcmag_117.3.png` (= frame 360) the Cycles cloud is closer (dense white billows, car mostly hidden).
-   DECIDED by the owner 2026-10-18: keep the more photoreal one -> the Cycles final as rendered, no re-render.
-   Remaining gaps vs the real cloud: ours is greyer and has no pink/red tint from the venue lights.
-2. Tell the owner: deliverables, the failed gate, the image findings (car at/past lip at 52.25; +y drift; jets at 53.45
-   vs T_BURN 53.95), credits used. Offer: short variant as the render default? (B wall edges favour HUD length; the
-   car-at-lip image favours short.)
-3. Repo improvement plan (agreed with the owner 2026-10-18, from a `/be-ambitious` pass). Goal: every published number
-   is checked by a tool against the footage or HUD, and one command rebuilds and rechecks everything. Order:
-   a. ALTITUDE (does not need tracking; can run any time). Build `claims.csv` (every number in PROJECT.html,
-      PHYSICS.html, README.md + producing script/output line + evidence class HUD/footage/model-only/none). Write
-      `check.py`: reruns `sim/wall_flip_sim.py`, `out/physics/make_charts.py`, `out/physics/flip.py`, fails on any
-      doc/output mismatch beyond a stated tolerance. Prove it on the git history: it must flag the stale PROJECT.html
-      §8 table. Install as pre-commit hook (`setup-pre-commit` skill). In `replay.html`, project the sim car onto the
-      real B and R1 frames and show the pixel residual per frame.
-   b. FIRST PROBE (max 20 tool calls). Track the car in the 21 B frames (`frames/tri/b/`) with Blender's built-in
-      motion tracker or OpenCV; compare to `CAR_B`. Pass = tracks to PCMag 116.4 and median diff <= ~10 px.
-      Not verified: `import cv2`, `yt-dlp` on PATH.
-   c. COMBINED, trimmed (only if b passes; reuse a's files, do not rebuild them): replace `CAR_R1`/`CAR_B` with tracked
-      centres from the highest-resolution source; fit T_RELEASE, T_BURN, ROLL_T0/T1, LIP_EXT and a y-drift term directly
-      to tracked pixels through the cached cameras (no triangulate-first; smooth camera poses across frames to remove
-      the wrong minima at R1 70.19 and 73.94-74.44; robust loss on pixel rows only, not HUD prior rows). Target = the
-      owner's gate on held-out frames (every 4th held out). Write `out/fit.json`; change sim defaults only after the
-      owner approves. Add the reprojection check to `check.py`.
+Report task 3 to the owner (3a done, 3b failed with the numbers above, 3c not run) and get one decision: build a
+silhouette-centre car tracker for shot B (per-frame segmentation of the car, or an aspect-adaptive tracker with a model
+file, which needs a download) and rerun the 3b gate; or close the triangulation line and keep the planar model.
+Older items still open: tell the owner the image findings (car at/past lip at 52.25; +y drift; jets at 53.45 vs T_BURN
+53.95; shot B floor ~140 px low after 53 s) and the offer of `short` as the render default.
 
 ## Decisions from the owner (2026-10-17)
 - Short-overhang variant as a switch (done). ElevenLabs SFX allowed, cap ~10 generations (8 used).
@@ -142,6 +131,10 @@ The session scratchpad (temporary, not in the repo):
 `r1_rough.py` (first R1 camera guess), `lips.png`. The durable record is the dicts and functions in `blender/triangulate.py`.
 2026-10-17 report session: `fitlag.py`, `sens.py` (lag fit, sensitivity) — superseded by `out/physics/make_charts.py`.
 
+2026-10-18 task 3b scratch: `trackb*.py` (frame alignment, NCC/MIL/CSRT trackers), `bvid/` (108 decoded frames),
+`cvc/` (opencv-contrib for CSRT), `track_sheet*.png`. Regenerate: `ffmpeg -ss 113.2 -i video_files/quRC56Z0EJw.mp4 -t 3.6
+-vsync 0 bvid/f_%04d.png`; trackers start at CAR_B[113.6] and run frame by frame to frame 96 (= PCMag 116.4).
+
 ## Workflow provenance
 - Skills used this project: `blender-headless` (load before Blender runs), `handoff-after-clear`; for PHYSICS.html
   `rigorous-explainer` (checktex/checklt/check_links/check_prose run; MathJax-only checks skipped) and `dataviz`
@@ -150,7 +143,8 @@ The session scratchpad (temporary, not in the repo):
 - 2026-10-18: render-stop diagnosis used Windows event logs, CLI transcripts in
   `~/.claude/projects/C--Users-simon-Downloads-tesla-roadster-simulation/*.jsonl`, and `search_session_transcripts`.
   `handoff-after-clear` refreshed this file.
-- 2026-10-18: `be-ambitious` skill used to write the plan in Next task 3 (prompts only; none run yet).
+- 2026-10-18: `be-ambitious` skill used to write the task 3 plan (full text of 3a-3c in HANDOFF.md at commit 099640d).
+  Run the same day: 3a done, 3b failed, 3c not run (see "Task 3 outcome").
 - Local `origin` URL still says `roadster-simulation`; the GitHub repo is now `roadster-physics` (commit 7e281bc).
   Push works through GitHub's redirect.
 
