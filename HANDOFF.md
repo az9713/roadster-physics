@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-17. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -94,26 +94,41 @@ Pages 200 verified (page + flip_film.png). Not done: interactive Chrome console 
 Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 102268 (Kuhn et al. 1991, p. 5).
 
 ## Next task
-0. The Cycles final STOPPED at about 08:12 on 2026-10-17: last saved frame `seg01/0341.png` (341 of 420), no error in
-   `out/logs/edl_broadcast_final.log`, no crash file, no "final exit" line in `out/logs/chain.log`, PID 13984 gone. Cause
-   unknown. Resume: rerun `out/logs/render_all.sh` detached (it deletes the 0-byte `0342.png` and skips done frames).
-   Ask the owner first: the stop may have been on purpose. Story of the whole project: `DEVELOPMENT-JOURNEY.html`.
-   RESTARTED 2026-10-17 10:26:39 by the owner's request (PID 20012 in `out/logs/chain.pid`; old log kept as
-   `out/logs/edl_broadcast_final.run1.log`). Frame 342 saved 10:29:40 (2 min 38 s). 78 frames left, about 3.5-4 h.
-   Likely cause of the first stop (not proven): an outside close of the hidden console. Blender printed its quit banner
-   but not "Blender quit", and the chain script wrote no "final exit" line; no crash file, no app-error or power event.
-   Status 2026-10-17 ~14:00: frame 372 of 420 saved, PID 20012 alive. Check `out/logs/chain.log` for "final exit 0".
+0. Cycles final STOPPED AGAIN (verified 2026-10-18). Run 2 (PID 20012, started 2026-10-17 10:26) saved
+   `seg01/0409.png` at 15:15:04, left a 0-byte `seg01/0410.png`, and `out/logs/chain.log` got "final exit 1" at 15:18:43.
+   PID 20012 is gone. The last line of `out/logs/edl_broadcast_final.log` is a normal "Saved" line: no error text.
+   409 of 420 frames done, 11 left (~4.7 min/frame, ~1 h). No `out/broadcast_final.mp4`. Run 1 stopped the same way at
+   frame 341 (cause not proven; see `out/logs/edl_broadcast_final.run1.log`). A session card was proposed 2026-10-18
+   ("Diagnose failed Cycles final render (exit 1)"); check whether it ran. Find the cause first (crash file, Windows
+   event log near 15:15-15:19, VRAM on frame 410), then ask the owner before rerunning `out/logs/render_all.sh` detached.
 1. When `out/broadcast_final.mp4` exists: `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`.
    Check 3 frames (44.0, 54.45, 55.95) against `frames/ref/`. Update PROJECT.html (status table row "Blender
    photoreal scene" -> done, §9 entry with render time and file).
 2. Tell the owner: deliverables, the failed gate, the image findings (car at/past lip at 52.25; +y drift; jets at 53.45
    vs T_BURN 53.95), credits used. Offer: short variant as the render default? (B wall edges favour HUD length; the
    car-at-lip image favours short.)
+3. Repo improvement plan (agreed with the owner 2026-10-18, from a `/be-ambitious` pass). Goal: every published number
+   is checked by a tool against the footage or HUD, and one command rebuilds and rechecks everything. Order:
+   a. ALTITUDE (does not need tracking; can run any time). Build `claims.csv` (every number in PROJECT.html,
+      PHYSICS.html, README.md + producing script/output line + evidence class HUD/footage/model-only/none). Write
+      `check.py`: reruns `sim/wall_flip_sim.py`, `out/physics/make_charts.py`, `out/physics/flip.py`, fails on any
+      doc/output mismatch beyond a stated tolerance. Prove it on the git history: it must flag the stale PROJECT.html
+      §8 table. Install as pre-commit hook (`setup-pre-commit` skill). In `replay.html`, project the sim car onto the
+      real B and R1 frames and show the pixel residual per frame.
+   b. FIRST PROBE (max 20 tool calls). Track the car in the 21 B frames (`frames/tri/b/`) with Blender's built-in
+      motion tracker or OpenCV; compare to `CAR_B`. Pass = tracks to PCMag 116.4 and median diff <= ~10 px.
+      Not verified: `import cv2`, `yt-dlp` on PATH.
+   c. COMBINED, trimmed (only if b passes; reuse a's files, do not rebuild them): replace `CAR_R1`/`CAR_B` with tracked
+      centres from the highest-resolution source; fit T_RELEASE, T_BURN, ROLL_T0/T1, LIP_EXT and a y-drift term directly
+      to tracked pixels through the cached cameras (no triangulate-first; smooth camera poses across frames to remove
+      the wrong minima at R1 70.19 and 73.94-74.44; robust loss on pixel rows only, not HUD prior rows). Target = the
+      owner's gate on held-out frames (every 4th held out). Write `out/fit.json`; change sim defaults only after the
+      owner approves. Add the reprojection check to `check.py`.
 
 ## Decisions from the owner (2026-10-17)
 - Short-overhang variant as a switch (done). ElevenLabs SFX allowed, cap ~10 generations (8 used).
 - Sim refit only if car rms <= 5 px in R1 and B and no frame > 15 px (failed -> not refitted).
-- One Cycles final of `broadcast` (running); `coverage` as EEVEE only (done). Agent judges the look itself.
+- One Cycles final of `broadcast` (stopped at 409/420, see Next task 0); `coverage` as EEVEE only (done). Agent judges the look itself.
 
 ## Session-transient scratch (gone after clear; regenerate only if needed)
 The session scratchpad (temporary, not in the repo):
@@ -126,6 +141,9 @@ The session scratchpad (temporary, not in the repo):
   `rigorous-explainer` (checktex/checklt/check_links/check_prose run; MathJax-only checks skipped) and `dataviz`
   (palette validator); `claude-in-chrome` (opened the repo for the owner).
 - Advisor guidance (followed): report measured vs sim to the owner before editing the sim.
+- 2026-10-18: `be-ambitious` skill used to write the plan in Next task 3 (prompts only; none run yet).
+- Local `origin` URL still says `roadster-simulation`; the GitHub repo is now `roadster-physics` (commit 7e281bc).
+  Push works through GitHub's redirect.
 
 ## Tools and rules (unchanged)
 - Blender 5.2.1 CLI: `%LOCALAPPDATA%\Programs\Blender\blender-5.2.1-windows-x64\blender.exe --factory-startup`.
