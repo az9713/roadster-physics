@@ -21,6 +21,14 @@
   #bar input[type=range] { flex:1 1 240px; accent-color:var(--accent); }
   button, select { background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; padding:5px 10px; font:inherit; cursor:pointer; }
   button.on { border-color:var(--accent); color:var(--accent); }
+  #vid { position:fixed; top:12px; right:12px; bottom:64px; width:min(560px, calc(100vw - 32px)); overflow:auto; display:none; background:rgba(15,23,42,.95); border:1px solid var(--border); border-radius:8px; padding:10px 12px; z-index:2; }
+  #vid.open { display:block; }
+  #vid canvas { width:100%; height:auto; display:block; border:1px solid var(--border); border-radius:4px; }
+  #vid .row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin:6px 0; }
+  #vid p { margin:4px 0; color:var(--text2); }
+  #vid .muted { color:var(--muted); font-size:12px; }
+  #vid svg { width:100%; height:120px; display:block; }
+  .k-sim { color:#2dd4bf; } .k-meas { color:#fb923c; } .k-fit { color:#c084fc; }
 </style>
 </head>
 <body>
@@ -34,11 +42,26 @@
   <button data-cam="broadcast" class="on">Broadcast</button>
   <button data-cam="chase">Chase</button>
   <button data-cam="free">Free</button>
+  <button id="vidBtn" hidden>Video check</button>
+</div>
+<div id="vid" aria-label="Sim car projected onto the real frames">
+  <div class="row"><b>Sim car on the real frames</b><span style="flex:1"></span><button id="vidClose">Close</button></div>
+  <div class="row"><select id="vidView"><option value="B">Shot B (PCMag live)</option><option value="R1">Replay R1 (VideoFromSpace)</option></select>
+    <button id="vidPrev">&lt;</button><button id="vidNext">&gt;</button><span id="vidLab"></span></div>
+  <canvas id="vidCan" width="1280" height="720"></canvas>
+  <p id="vidInfo"></p>
+  <svg id="vidBars" viewBox="0 0 540 120" preserveAspectRatio="none"></svg>
+  <p id="vidSum"></p>
+  <p class="muted">Circle <span class="k-sim">teal</span>: sim car projected through the cached camera of that frame
+  (<code>out/cameras_tri.json</code>). Cross <span class="k-meas">orange</span>: car centre in the frame
+  (<code>CAR_B</code>/<code>CAR_R1</code>). Residual = distance in px (1280-px frame). Bars: residual per frame; click a bar to
+  open that frame. Data: <code>python blender/reproj.py</code> writes <code>out/reproj.js</code>.</p>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="out/replay_data.js"></script>
+<script src="out/reproj.js" onerror="window.REPROJ=null"></script>
 <script>
 // Sim coordinates are used as-is: x forward along the run, y left, z up. Frame layout:
 // [t, x, y, z, qw, qx, qy, qz, noz x10 (fraction of nominal max thrust), G, alt_ft, gas_kg, P_bar]
@@ -185,6 +208,53 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+
+// Video check: sim car projected onto the real shot-B and R1 frames (out/reproj.js from blender/reproj.py)
+(function () {
+  const R = window.REPROJ;
+  if (!R) return;
+  const $ = id => document.getElementById(id), panel = $('vid'), can = $('vidCan'), ctx = can.getContext('2d');
+  $('vidBtn').hidden = false;
+  $('vidBtn').onclick = () => { panel.classList.toggle('open'); show(); };
+  $('vidClose').onclick = () => panel.classList.remove('open');
+  let view = 'B', k = 0;
+  const rows = () => R.frames.filter(f => f.view === view);
+  const img = new Image();
+  function mark(p, col, cross) {
+    if (!p) return;
+    ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath();
+    if (cross) { ctx.moveTo(p[0] - 12, p[1] - 12); ctx.lineTo(p[0] + 12, p[1] + 12); ctx.moveTo(p[0] + 12, p[1] - 12); ctx.lineTo(p[0] - 12, p[1] + 12); }
+    else ctx.arc(p[0], p[1], 12, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+  function draw(f) {
+    ctx.clearRect(0, 0, can.width, can.height);
+    if (img.complete && img.naturalWidth) ctx.drawImage(img, 0, 0, can.width, img.naturalHeight * can.width / img.naturalWidth);
+    if (f.meas && f.sim) { ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(...f.sim); ctx.lineTo(...f.meas); ctx.stroke(); }
+    mark(f.sim, '#2dd4bf', false); mark(f.fit, '#c084fc', false); mark(f.meas, '#fb923c', true);
+  }
+  function show() {
+    const L = rows(); k = Math.max(0, Math.min(L.length - 1, k)); const f = L[k];
+    $('vidLab').textContent = `${k + 1} / ${L.length}`;
+    img.onload = () => draw(f); img.src = f.img; draw(f);
+    const res = f.res == null ? 'no car position (out of frame or in the cloud)' : `${f.res.toFixed(1)} px`;
+    $('vidInfo').innerHTML = `${view} frame ${f.t.toFixed(2)} s = sim ${f.t_sim.toFixed(2)} s. Residual sim vs car: <b>${res}</b>` +
+      (f.fit_res != null ? `; fit vs car: <b class="k-fit">${f.fit_res.toFixed(1)} px</b>` : '') +
+      `. Wall-edge rms of the camera: ${f.edge_rms} px.` + (f.flag ? ` <span class="muted">(${f.flag})</span>` : '');
+    const mx = Math.max(50, ...L.map(r => r.res || 0)), w = 540 / L.length;
+    $('vidBars').innerHTML = L.map((r, i) => r.res == null ? '' :
+      `<rect x="${i * w + 1}" y="${120 - 110 * r.res / mx}" width="${w - 2}" height="${110 * r.res / mx}" fill="${i === k ? '#fb923c' : '#2dd4bf'}" data-i="${i}" style="cursor:pointer"><title>${r.t} s: ${r.res} px</title></rect>`).join('') +
+      `<text x="2" y="10" fill="#94a3b8" font-size="10">max ${mx.toFixed(0)} px</text>`;
+    $('vidBars').querySelectorAll('rect').forEach(b => b.onclick = () => { k = +b.dataset.i; show(); });
+    const s = R.summary[view];
+    $('vidSum').textContent = `${view}: ${s.n} frames with a car position, rms ${s.rms} px, median ${s.median} px, max ${s.max} px.` +
+      (R.fit_summary ? ` Fit: rms ${R.fit_summary[view].rms} px, max ${R.fit_summary[view].max} px.` : '');
+    t = f.t_sim; playing = false; playBtn.textContent = 'Play'; scrub.value = t;
+  }
+  $('vidView').onchange = e => { view = e.target.value; k = 0; show(); };
+  $('vidPrev').onclick = () => { k--; show(); };
+  $('vidNext').onclick = () => { k++; show(); };
+})();
 </script>
 </body>
 </html>

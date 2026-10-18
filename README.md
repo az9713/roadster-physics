@@ -78,12 +78,15 @@ this repository.
 | `out/*.mp4` | Draft videos: `coverage_draft.mp4` (20.5 s), `broadcast_draft.mp4` (13.97 s), `broadcast_draft_hud.mp4` (13.97 s, HUD + sound). |
 | `out/sfx/` | ElevenLabs sound-effect takes and `mix.py`, which mixes them to the sim. |
 | `frames/`, `evidence/` | Stills from the source videos, used as measurement references. |
+| `check.py`, `claims.csv` | The claim checker and its registry: every number in `PROJECT.html`, `PHYSICS.html` and this file, with the script and output line that produce it and an evidence class (HUD, footage, model-only, none). |
 | `HANDOFF.md` | Resume notes for the next work session. |
 
 ## Status and known limits
 
-- The simulation is done and its self-check passes. The 3D replay and the EEVEE drafts are done. A Cycles final of
-  the broadcast cut is not in the repository yet.
+- The simulation is done and its self-check passes. The 3D replay and the EEVEE drafts are done. The Cycles final of
+  the broadcast cut is `out/broadcast_final.mp4` (with HUD and sound: `out/broadcast_final_hud.mp4`).
+- `python check.py` reruns the sim and the two physics scripts and compares the published numbers with their output
+  (registry: `claims.csv`). The pre-commit hook runs `python check.py --fast`.
 - The flight after release is planar (y = 0). The triangulation of the real car path did not reach its accuracy
   limit (≤ 5 px; best result 76 px in R1, 50 px in shot B), so the sim was not refitted. In the images, the real car
   drifts sideways to +y. `out/triangulation.json` is not valid.
