@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-18 (task 3 run). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18 (owner decisions; claims gap work). Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -113,18 +113,27 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
   1080p not downloaded (resolution is not the failure cause; the box shape is).
 - 3c NOT RUN (rule: stop after a failed 3b). No `out/fit.json`; no reprojection check in `check.py` beyond the panel data.
 
+## Claims gap work (2026-10-18, after the owner's decisions)
+- `check.py` rules (no sim change): output `par` = 50 sim constants via import (`PARAMS`: name, words, expr, unit; pin
+  needs equal value + shared word + unit after the number); 4+ significant digits pin by value alone (not the
+  `t NN.NN:` grid stamps of flip.py); labels: formula constant/index (223), code line number (76), section number (36);
+  `CITED` sections -> "cited source (press or video)" (47). KaTeX `{,}` separator parsed. Checked 203 -> 400 (all agree); no tool 1,331 -> 752
+  (none 388, HUD 196, footage 168). Proofs: `--rev 099640d` still flags the 14; tyre friction 1.1 -> 1.2 test is caught.
+- Left (not done): print lines in `out/physics/flip.py` / `make_charts.py` for worked-example numbers (biggest groups:
+  PHYSICS 4.8 aero 38, §8 controller 33, 4.4 33, 4.9 32); reader for `out/camera_calib.json` (~6 numbers);
+  HUD/video readings in prose stay unchecked (inputs).
+
 ## Next task
-Triangulation line CLOSED by the owner 2026-10-18: keep the planar y = 0 model, no sim refit, task 3c will not run,
-no new car tracker. Do not reopen unless the owner asks. Open items: tell the owner the image findings (car at/past
-lip at 52.25; +y drift; jets at 53.45 vs T_BURN 53.95), and ask whether `short` should be the render default (B wall
-edges favour `hud`; the car-at-lip image favours `short`). The 1,331 claims in `claims.csv` with no producing script
-are the remaining gap toward "every published number checked by a tool".
+No task is open. Candidate: the worked-example print lines above, section by section, then `python check.py --inventory`.
+Triangulation stays CLOSED (owner, 2026-10-18).
 
 ## Decisions from the owner (2026-10-17)
 - Short-overhang variant as a switch (done). ElevenLabs SFX allowed, cap ~10 generations (8 used).
 - Sim refit only if car rms <= 5 px in R1 and B and no frame > 15 px (failed -> not refitted).
 - 2026-10-18: triangulation line closed after task 3b failed; planar model kept (PROJECT.html §9).
 - One Cycles final of `broadcast` (done 2026-10-18, see Outcome); `coverage` as EEVEE only (done). Agent judges the look itself.
+- 2026-10-18 (after the image findings were reported): render default stays `hud`; no roll feed-forward (sim unchanged,
+  34.3 deg overshoot stays documented); next work = the claims gap (done in part, see above).
 
 ## Session-transient scratch (gone after clear; regenerate only if needed)
 The session scratchpad (temporary, not in the repo):

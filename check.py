@@ -11,7 +11,8 @@
 
 claims.csv holds one row per number in PROJECT.html, PHYSICS.html and README.md: where it is (doc, section, the text
 before it), the value shown, the evidence class (HUD, footage, model-only, none), and, when a tool prints it, the
-script, the output line and an expression that reads the fresh value. A row with check=yes must agree with the fresh
+script, the output line and an expression that reads the fresh value. A fourth output, "par", is the sim's input
+constants (PARAMS below), read by importing the sim module. A row with check=yes must agree with the fresh
 value within tol (default: half a unit of the last digit shown). The expression pins the doc number to one output
 line; the pin is set when doc and output agree (--inventory) and stays when the doc later drifts.
 Exit code: 0 = all checked rows agree, 1 = a mismatch or a missing anchor, 2 = the tool itself failed.
@@ -99,15 +100,46 @@ HISTORICAL = [
     ("PHYSICS.html", "text", "At n = 1.25 the run gave"),
     ("PHYSICS.html", "text", "The first full run touched down at"),
 ]
+# Sections that list facts quoted from the press and the videos (spec table, stunt and venue facts). A number there that
+# no tool prints is noted "cited source", not "no tool prints it".
+CITED = [("PROJECT.html", "2. Which stunt this is"), ("PROJECT.html", "5. The car"), ("PROJECT.html", "6. Venue and press"),
+         ("README.md", "Secondary sources")]
 LABEL_BEFORE = re.compile(r"(§|Fig\.|Figs\.|Fig|Part|Parts|Section|section|Proposition|Propositions|Prop\.|step|Step|steps|"
                           r"line|lines|item|Item|Items|items|Table|Eq\.|eq\.|No\.|#|r|v|Opus|Blender|KaTeX|Three\.js|"
                           r"Python|ffmpeg|stage|Stage|Stages|task|Task|commit|Contents)\s*\(?$")
+# Sim inputs that check.py reads by importing the sim module (main() does not run): (name, words the docs use near the
+# value, expression on the module, unit). The "par" output prints "<words> <name> = <value> <unit>" per entry.
+# auto_match pins a doc number to it when the value is equal (not rounded), a word is shared, and the unit appears in
+# the 30 characters after the doc number ("" = no unit test). Nozzle rows: 0 = rear (y 0.45), 4 = lift FL, 8 = front L.
+PARAMS = [("M_DRY", "dry mass", "M_DRY", "kg"), ("GAS0", "gas mass air", "GAS0", "kg"), ("V_TANK", "tank volume copv", "V_TANK", "m³"),
+          ("T_GAS0", "start temperature", "T_GAS0", "K"), ("R_GAS", "gas constant", "R_GAS", "J"),
+          ("GAMMA", "gamma ratio heats", "GAMMA", ""), ("POLY_N", "polytropic exponent n", "POLY_N", ""),
+          ("CF", "thrust coefficient cf", "CF", ""), ("INERTIA_XX", "inertia roll ixx", "INERTIA[0, 0]", "kg"),
+          ("INERTIA_YY", "inertia pitch iyy", "INERTIA[1, 1]", "kg"), ("INERTIA_ZZ", "inertia yaw izz", "INERTIA[2, 2]", "kg"),
+          ("H_CG", "cg height hcg rest", "H_CG", "m"), ("WHEELBASE", "wheelbase", "WHEELBASE", "m"), ("TRACK", "track", "TRACK", "m"),
+          ("CAR_L", "length", "CAR_L", "m"), ("CAR_W", "width", "CAR_W", "m"), ("CAR_H", "height", "CAR_H", "m"),
+          ("K_SUSP_KN", "suspension spring wheel", "K_SUSP / 1e3", "kN"), ("C_SUSP_KN", "suspension damper wheel", "C_SUSP / 1e3", "kN"),
+          ("MU", "friction tyre", "MU", ""), ("RHO", "air density rho", "RHO", "kg"),
+          ("CDA_X", "drag area cda x", "CDA[0]", "m"), ("CDA_Y", "drag area cda y", "CDA[1]", "m"), ("CDA_Z", "drag area cda z", "CDA[2]", "m"),
+          ("SUCTION_MAX_KG", "hud downforce suction", "SUCTION_MAX_KG", "kg"), ("VALVE_TAU_MS", "valve lag tau", "VALVE_TAU * 1e3", "ms"),
+          ("RAMP_WIDTH", "ramp wall width", "RAMP_WIDTH", "m"), ("T_RELEASE", "release", "T_RELEASE", "s"),
+          ("ROLL_T0", "roll starts window", "ROLL_T0", "s"), ("ROLL_T1", "roll ends upright window", "ROLL_T1", "s"),
+          ("BRAKE_T1", "brake braking", "BRAKE_T1", "s"), ("HUD_LAG", "hud lag", "HUD_LAG", "s"), ("LIP_EXT", "lip", "LIP_EXT", "m"),
+          ("T_BURN", "burn landing", "T_BURN", "s"), ("G0", "gravity g0 standard", "G0", "m/s"), ("FT", "ft foot", "FT", "m"),
+          ("REAR_X", "rear main x", "N_POS[0, 0]", ""), ("REAR_Y1", "rear main y", "N_POS[0, 1]", ""),
+          ("REAR_Y2", "rear main y", "N_POS[1, 1]", ""), ("REAR_Z", "rear main z", "N_POS[0, 2]", ""),
+          ("REAR_KN", "rear main forward each", "N_FMAX0[0] / 1e3", "kN"),
+          ("LIFT_X", "corner lift x", "N_POS[4, 0]", ""), ("LIFT_Y", "corner lift y", "N_POS[4, 1]", ""),
+          ("LIFT_Z", "corner lift z", "N_POS[4, 2]", ""), ("LIFT_KN", "corner lift up each", "N_FMAX0[4] / 1e3", "kN"),
+          ("FRONT_X", "front x", "N_POS[8, 0]", ""), ("FRONT_Y", "front y", "N_POS[8, 1]", ""), ("FRONT_Z", "front z", "N_POS[8, 2]", ""),
+          ("FRONT_KN", "front aft inward each", "N_FMAX0[8] / 1e3", "kN"),
+          ("FRONT_DEG", "front angle sin cos outward", "np.degrees(np.arctan2(-N_DIR[8, 1], -N_DIR[8, 0]))", "°")]
 EVID_WORDS = [("footage", r"\bpx\b|frame|PCMag|shot B|camera|R1\b|replay|footage|video|image|lens|tripod|pixel"),
               ("HUD", r"HUD|gauge|G-FORCE|ALTITUDE|PITCH|DOWNFORCE")]
 STOP = set("the and of at in to a an is from with for by on as it this that are be was its or not than then so".split())
 
 # ---------------------------------------------------------------- text extraction -------------------------------------
-NUM = re.compile(r"(?<![\w.])([-−]?)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?([eE][-−]?\d+)?")
+NUM = re.compile(r"(?<![\w.])([-−]?)(\d{1,3}(?:(?:,|\{,\})\d{3})+|\d+)(\.\d+)?([eE][-−]?\d+)?")   # {,} = KaTeX comma
 SPAN_LABEL = re.compile(r"\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}:\d{2}(?:\.\d+)?(?:[–-]\d{1,2}:\d{2}(?:\.\d+)?)?")
 
 
@@ -185,7 +217,7 @@ def section_at(secs, pos):
 
 def parse_num(m):
     sign, intp, frac, exp = m.groups()
-    v = float((("-" if sign else "") + intp.replace(",", "") + (frac or "") + (exp or "").replace("−", "-")))
+    v = float((("-" if sign else "") + intp.replace("{,}", "").replace(",", "") + (frac or "") + (exp or "").replace("−", "-")))
     dec = len(frac) - 1 if frac else 0
     return v, dec, bool(exp)
 
@@ -229,7 +261,23 @@ def run_script(name):
     return r.stdout
 
 
+def params_text():
+    """One line per PARAMS entry, from the sim module as imported (the overhang switch reads sys.argv: "hud" here)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("sim_params", ROOT / SCRIPTS["sim"])
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    # eval is safe enough here: the expressions are the PARAMS strings above, evaluated on the sim module's names
+    return "".join(f"{w} {n} = {float(eval(e, vars(mod))):.10g} {u}".rstrip() + "\n" for n, w, e, u in PARAMS)
+
+
 def outputs(fast):
+    out = _outputs(fast)
+    out["par"] = params_text()
+    return out
+
+
+def _outputs(fast):
     if fast:
         if not CACHE.exists():
             print("check.py: out/check_outputs.json is missing; run: python check.py")
@@ -257,7 +305,8 @@ def lines_of(out):
             if line.startswith("wrote "):
                 continue
             ln = line.replace("_", " ")
-            nums = [(parse_num(m)[0], words(ln[max(0, m.start() - 30):m.end() + 12])) for m in NUM.finditer(ln)]
+            nums = [(parse_num(m)[0], words(ln if k == "par" else ln[max(0, m.start() - 30):m.end() + 12]))
+                    for m in NUM.finditer(ln)]
             if nums:
                 res.append((k, line.strip(), nums))
     return res
@@ -317,6 +366,7 @@ def inventory(out):
         hist_text = [h[2] for h in HISTORICAL if h[0] == doc and h[1] == "text"]
         hist_secs = [h[2] for h in HISTORICAL if h[0] == doc and h[1] == "section"]
         for a, b, shown, v, dec, label in tokens(text):
+            label = label or label_of(text, secs, a, b, shown, v, dec)
             sec = section_at(secs, a)
             ctx = text[max(0, a - 60):a]
             after = text[b:b + 25]
@@ -336,18 +386,19 @@ def inventory(out):
                     if len(pin) > 4:
                         row["tol"] = str(pin[4])
                 elif not any(n[0] == doc and ctx.rstrip().endswith(n[1]) for n in NOAUTO):
-                    m = auto_match(v, dec, text[max(0, a - 35):b + 12], olines)
+                    m = auto_match(v, dec, text[max(0, a - 35):b + 12], olines, text[b:b + 30])
                     if m:
                         row.update(expr=m, note="auto match (value + words)")
                 if row["expr"]:
                     row["output_line"] = line_of(row["expr"]) if row["expr"].count("(") == 1 else row["expr"]
-                    row["script"] = SCRIPTS[row["expr"][3:].split('"')[0]] if row["expr"].startswith("L(") else SCRIPTS["sim"]
+                    key = row["expr"][3:].split('"')[0] if row["expr"].startswith("L(") else "sim"
+                    row["script"] = SCRIPTS["sim"] + " (constants)" if key == "par" else SCRIPTS[key]
                     row["check"] = "yes"
                     row["tol"] = row["tol"] or f"{tol_of(dec, shown):.3g}"
                     row["evidence"] = "HUD" if re.search(r"hud|free-fall fit", row["output_line"], re.I) else "model-only"
                 else:
                     row["evidence"] = classify(sentence)
-                    row["note"] = "no tool prints it"
+                    row["note"] = "cited source (press or video); no tool" if (doc, sec) in CITED else "no tool prints it"
             rows.append(row)
         for name in re.findall(r"<!--TABLE:([\w.]+)-->", read_doc(doc)):
             rows.append(dict(id="", doc=doc, section="table", context=f"<!--TABLE:{name}-->", value="(table)", after="",
@@ -376,6 +427,24 @@ def inventory(out):
         print(f"   evidence {k[0]:10s} check {k[1]:3s}: {by[k]}")
 
 
+def label_of(text, secs, a, b, shown, v, dec):
+    """Numbers that name something instead of measuring it: section numbers (heading text and the contents list),
+    code line numbers after "file.py:", and small integers inside a formula (exponents, indices, 1/2 factors)."""
+    if any(text.startswith(name, a) for _, name in secs):
+        return "label (section number)"
+    py = text.rfind(".py:", max(0, a - 250), a)
+    if dec == 0 and py >= 0 and ". " not in text[py + 4:a]:
+        return "label (code line number)"
+    if dec == 0 and abs(v) <= 10 and in_math(text, a):
+        return "label (formula constant or index)"
+    return ""
+
+
+def in_math(text, a):
+    pre = text[max(0, a - 3000):a]
+    return pre.count("$$") % 2 == 1 or pre.rfind("\\(") > pre.rfind("\\)")
+
+
 def classify(s):
     for name, pat in EVID_WORDS:
         if re.search(pat, s):
@@ -383,18 +452,29 @@ def classify(s):
     return "none"
 
 
-def auto_match(v, dec, ctx, olines):
+def auto_match(v, dec, ctx, olines, after=""):
     """Pin a doc number to an output number with the same value at the shown precision and at least one shared
-    non-unit word near both numbers (doc: 35 chars before, 12 after; output: 30 before, 12 after)."""
-    if len(f"{abs(v):.{dec}f}".replace(".", "").lstrip("0")) < 3:     # fewer than 3 significant digits: chance matches
-        return ""
+    non-unit word near both numbers (doc: 35 chars before, 12 after; output: 30 before, 12 after; a "par" line: all of
+    it, and the value must be equal, not rounded, with the unit after the doc number). Fewer than 3 significant
+    digits: only a "par" line (sim constant) can match. 4 or more: the value alone is enough (score 0.5), except the
+    time stamps that start the flip.py grid lines ("t 53.45: ..."), which are not results."""
+    sig = len(f"{abs(v):.{dec}f}".replace(".", "").lstrip("0"))
     cw = words(ctx) - UNITS
     best, best_score = "", 0
     for k, line, nums in olines:
+        if sig < 3 and k != "par":
+            continue
         for n, (x, lw) in enumerate(nums, 1):
             if abs(round(x, dec) - v) > 1e-9 * max(1, abs(v)):
                 continue
-            score = len(cw & lw)
+            if k == "par":
+                unit = line.split(" = ")[1].partition(" ")[2]
+                tail = re.sub(r"^[\s\\(){}/,.\d+−–→-]*", "",after.replace("\\text{", ""))   # "/ 2,900 / 3,200 kg"
+                if abs(x - v) > 1e-9 * max(1, abs(v)) or not tail.startswith(unit):
+                    continue
+            if k == "flip" and n == 1 and re.match(r"t \d", line):
+                continue
+            score = len(cw & lw) or (0.5 if sig >= 4 else 0)
             if score > best_score:
                 if k == "sim":
                     best = f'S("{line.split()[0]}")'
@@ -453,7 +533,7 @@ def find_value(text, context, value):
         tail = tail[tail.find(" "):]
     pat, k = "", 0
     for m in NUM.finditer(tail):
-        pat += re.escape(tail[k:m.start()]) + r"[-−]?[\d,]+(?:\.\d+)?(?:[eE][-−]?\d+)?"
+        pat += re.escape(tail[k:m.start()]) + r"[-−]?(?:[\d,]|\{,\})+(?:\.\d+)?(?:[eE][-−]?\d+)?"
         k = m.end()
     pat += re.escape(tail[k:])
     hits = []
