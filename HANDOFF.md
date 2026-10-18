@@ -101,9 +101,11 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
    HUD file (the §9 render entry is already written).
    FINDING (2026-10-18, owner saw "no difference"): final vs `out/broadcast_draft.mp4` luma PSNR is 39.6-42.0 dB per
    second for 1-9 s (near identical: same scene, lamps, cameras; only edge and noise differences) and 22.2-22.6 dB for
-   11-13 s. There the Cycles cloud (64 samples, denoised, volume_step_rate 2.0, `build_scene.py:646-648`) is thinner
-   and grainy, so the car shows through it; the EEVEE cloud is smooth and opaque. Ask the owner which cloud is wanted
-   before the HUD mux (a Cycles cloud fix means re-rendering about frames 330-419, about 7 h at 4.7 min/frame).
+   11-13 s. There the EEVEE draft cloud is thin and dithered (the car shows through); the Cycles cloud (64 samples,
+   denoised, volume_step_rate 2.0, `build_scene.py:646-648`) is dense, smooth and hides the car. Against the real
+   frame `frames/ref/pcmag_117.3.png` (= frame 360) the Cycles cloud is closer (dense white billows, car mostly hidden).
+   DECIDED by the owner 2026-10-18: keep the more photoreal one -> the Cycles final as rendered, no re-render.
+   Remaining gaps vs the real cloud: ours is greyer and has no pink/red tint from the venue lights.
 2. Tell the owner: deliverables, the failed gate, the image findings (car at/past lip at 52.25; +y drift; jets at 53.45
    vs T_BURN 53.95), credits used. Offer: short variant as the render default? (B wall edges favour HUD length; the
    car-at-lip image favours short.)
