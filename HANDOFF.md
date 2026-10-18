@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-18 08:45. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18 09:20. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -95,10 +95,14 @@ Pages 200 verified (page + flip_film.png). Not done: interactive Chrome console 
 Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 102268 (Kuhn et al. 1991, p. 5).
 
 ## Next task
-1. **START HERE.** `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`. Check 3 frames
-   (44.0, 54.45, 55.95) against `frames/ref/`. Decide with the owner whether to commit the two final MP4s (drafts are
-   tracked; check size first). Update PROJECT.html: status table row "Blender photoreal scene" -> done, §9 line for the
-   HUD file (the §9 render entry is already written).
+1. DONE 2026-10-18: `out/broadcast_final_hud.mp4` (1.81 MB, 419 frames, 13.97 s, sound). Gauges vs `frames/ref/`:
+   44.0 s 1.0 G/0.0 ft = real; 54.45 s 3.2 G/19.2 ft vs 3.2/18.7; 55.95 s 0.8 G/3.8 ft vs 1.4/3.6. PROJECT.html status row
+   -> done, §9 line written. **OPEN: the owner decides whether to commit `out/broadcast_final.mp4` (1.38 MB) and
+   `out/broadcast_final_hud.mp4` (1.81 MB)** (drafts are tracked).
+   NEW FINDING: shot B at 54.45 s matches the fitted wall points (y 170-560 px) but the floor/wall foot is ~140 px low
+   (y ~715 vs ~578). Calib points for late B frames have no floor rows; `car_from_video` at 115.8 = x -177 m. Foot
+   matches within ~10 px at 48.45/50.85 s, goes low at 53.45/54.45 s (`out/compare/stills_vs_pcmag.jpg`). Possible
+   cause of the B residuals in the failed gate. Fix = floor points in `calib_cameras.py` + shot B re-render: owner's call.
    FINDING (2026-10-18, owner saw "no difference"): final vs `out/broadcast_draft.mp4` luma PSNR is 39.6-42.0 dB per
    second for 1-9 s (near identical: same scene, lamps, cameras; only edge and noise differences) and 22.2-22.6 dB for
    11-13 s. There the EEVEE draft cloud is thin and dithered (the car shows through); the Cycles cloud (64 samples,
