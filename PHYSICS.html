@@ -155,7 +155,7 @@ $$L = \frac{z_{rel} - z_{170}}{\sin 170°} + L_{lip}$$
 <div class="card plain"><b class="lbl">In plain words.</b> If you know how steep the track is and how much the car climbed,
 you know how far it moved sideways. The code adds up those small sideways steps. Where the track is nearly flat, the
 method is too sensitive to reading errors, so a circle fills that part. The upside-down ceiling is a straight line.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L101">sim/wall_flip_sim.py:101–133</a> <code>build_wall()</code></div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L101">sim/wall_flip_sim.py:101–133</a> <code>build_wall()</code></div>
 
 <!-- ================================================================ -->
 <h3 id="s2">2. Motion on the wall</h3>
@@ -177,7 +177,7 @@ $$\sum_i \bigl(s_i - f(t_i)\bigr)^2 + \lambda \int f''(t)^2\,dt, \qquad \lambda 
 44.0 s to the release at 52.25 s. Before 45.65 s it sets \(v = a = 0\).</p>
 <div class="card plain"><b class="lbl">In plain words.</b> The HUD says how high the car was at each moment. The rebuilt
 wall says where on the track that height is. A smooth curve through those points gives the speed and the acceleration.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L173">sim/wall_flip_sim.py:173–186</a> <code>wall_phase()</code>, start position at line 179, spline at line 182</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L173">sim/wall_flip_sim.py:173–186</a> <code>wall_phase()</code>, start position at line 179, spline at line 182</div>
 
 <!-- ================================================================ -->
 <h3 id="s3">3. Loads on the wall: tyres, suction, G, power</h3>
@@ -209,7 +209,7 @@ $$G = \frac{\lvert a\,\hat{\mathbf t} + v^2\kappa\,\hat{\mathbf n} - \mathbf g\r
 beat the air. A tyre can only push as hard as it is pressed onto the surface, times the friction coefficient. Upside
 down, gravity pulls the car away, so the suction fans must press the car on. The model computes the least suction that
 still lets the tyres grip.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L187">sim/wall_flip_sim.py:187–199</a>: tyre force line 193, minimum suction line 194, G lines 195–196, power line 199</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L187">sim/wall_flip_sim.py:187–199</a>: tyre force line 193, minimum suction line 194, G lines 195–196, power line 199</div>
 
 <!-- ================================================================ -->
 <h3 id="s4">4. Free flight: the rigid body</h3>
@@ -237,7 +237,7 @@ quaternion. Over 5.75 s that is 5,750 steps.</p>
 <div class="card plain"><b class="lbl">In plain words.</b> In the air, the car obeys two laws. Force changes its speed.
 Moment (twist) changes its spin. The spin is stored as a quaternion, a four-number form of attitude that never locks up.
 The code advances time in 1 ms steps.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L289">sim/wall_flip_sim.py:289–302</a> integration; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L145">145–154</a> quaternion ↔ matrix; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L210">210–213</a> initial state</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L289">sim/wall_flip_sim.py:289–302</a> integration; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L145">145–154</a> quaternion ↔ matrix; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L210">210–213</a> initial state</div>
 
 <!-- ================================================================ -->
 <h3 id="s5">5. Forces in flight: nozzles, drag, wheels</h3>
@@ -258,7 +258,7 @@ also gives a moment \(R^{\mathsf T}\bigl((R\mathbf r_w)\times\mathbf F\bigr)\) i
 <div class="card plain"><b class="lbl">In plain words.</b> Each jet pushes the car and also twists it, more so when it
 sits far from the centre. One 6×10 table holds both effects for all ten jets. Air drag grows with the square of speed.
 The wheels are springs with shock absorbers that work only when they touch the ground.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L58">sim/wall_flip_sim.py:58–70</a> nozzles and \(B\); <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L243">243–254</a> wheels; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L287">287–291</a> thrust, drag, sum</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L58">sim/wall_flip_sim.py:58–70</a> nozzles and \(B\); <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L243">243–254</a> wheels; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L287">287–291</a> thrust, drag, sum</div>
 
 <!-- ================================================================ -->
 <h3 id="s6">6. The gas: Abel-Noble tank and blowdown</h3>
@@ -282,7 +282,7 @@ $$T_{k+1} = T_k \left(\frac{v_k - b}{v_{k+1} - b}\right)^{n-1}$$
 <div class="card plain"><b class="lbl">In plain words.</b> At 543 bar the gas is so dense that its molecules take up real
 space, so the pressure is 50% higher than the simple gas law says. When gas leaves, the gas that stays expands and cools,
 and the pressure falls faster than the mass. Heat from the tank wall slows the cooling. The exponent \(n\) sets how much.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L81">sim/wall_flip_sim.py:81–97</a> <code>Tank</code>: pressure line 87, blowdown line 96</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L81">sim/wall_flip_sim.py:81–97</a> <code>Tank</code>: pressure line 87, blowdown line 96</div>
 
 <!-- ================================================================ -->
 <h3 id="s7">7. The nozzle: thrust and mass flow</h3>
@@ -302,7 +302,7 @@ pressure: \(F_{\max,i}(P) = F_{\max,i}^{(0)}\,P/P_0\). The valve can only reduce
 <div class="card plain"><b class="lbl">In plain words.</b> A cold-gas jet is a hole that the gas leaves at the speed of
 sound. A bigger hole or a higher pressure gives more thrust and uses gas faster. Each newton of thrust uses gas at
 1/689 kg/s. As the tank empties, every jet gets weaker.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L78">sim/wall_flip_sim.py:78</a> \(\Gamma'\); <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L89">89–93</a> \(c^*\) and \(\dot m\); <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L278">278</a> pressure limit</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L78">sim/wall_flip_sim.py:78</a> \(\Gamma'\); <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L89">89–93</a> \(c^*\) and \(\dot m\); <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L278">278</a> pressure limit</div>
 
 <!-- ================================================================ -->
 <h3 id="s8">8. The flight controller</h3>
@@ -343,7 +343,7 @@ equation (<a href="#s4">§4</a>).</p>
 forward speed (brake smoothly to a stop by 55.0 s) and for attitude (roll over in 0.75 s). Each 10 ms it compares the car
 with the plan and asks for a force and a twist that close the gap, like a spring with a shock absorber. Until 53.95 s it
 lets the car fall freely.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L204">sim/wall_flip_sim.py:204–228</a> references; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L265">265–277</a> feedback laws; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L167">167–169</a> \(S(u)\)</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L204">sim/wall_flip_sim.py:204–228</a> references; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L265">265–277</a> feedback laws; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L167">167–169</a> \(S(u)\)</div>
 
 <!-- ================================================================ -->
 <h3 id="s9">9. The valve allocator</h3>
@@ -362,7 +362,7 @@ stay there.</p>
 <div class="card plain"><b class="lbl">In plain words.</b> Jets can only push, and each has a limit. When the wish is more
 than the jets can give, the allocator picks the best compromise and treats twist errors as more serious than force
 errors. Valves take about 20 ms to follow.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L278">sim/wall_flip_sim.py:278–282</a> allocator; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L284">284–286</a> valves; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L257">257–263</a> landing cut</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L278">sim/wall_flip_sim.py:278–282</a> allocator; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L284">284–286</a> valves; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L257">257–263</a> landing cut</div>
 
 <!-- ================================================================ -->
 <h3 id="s10">10. The HUD lag: a free-fall fit</h3>
@@ -382,7 +382,7 @@ in place of 0.34 s.</p>
 <div class="card plain"><b class="lbl">In plain words.</b> A car that lets go of a ceiling can only drift up for a moment
 before it falls. The HUD altitude kept climbing for 0.4 s, so the gauge is late. Fitting a fall curve to the gauge gives
 a delay of 0.34 s. The sim shifts all HUD altitudes 0.30 s earlier.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L51">sim/wall_flip_sim.py:51</a> <code>HUD_LAG</code>; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L136">136–138</a> applied to all HUD altitudes; fit in <code>out/physics/make_charts.py</code> (the fit code was not in the repository before)</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L51">sim/wall_flip_sim.py:51</a> <code>HUD_LAG</code>; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L136">136–138</a> applied to all HUD altitudes; fit in <code>out/physics/make_charts.py</code> (the fit code was not in the repository before)</div>
 
 <!-- ================================================================ -->
 <h3 id="s11">11. Fit metrics and the self-check</h3>
@@ -399,12 +399,12 @@ after release.</li>
 <p>The run stops with an error unless all seven checks pass: apex within 1.5 ft of the HUD; touchdown within 0.4 s;
 altitude RMSE under 2.5 ft; landing tilt under 10°; gas used between 0 and 250 kg; wall clearance over 0.1 m; no body
 corner more than 0.05 m below the ground.</p>
-<p class="muted"><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L340">sim/wall_flip_sim.py:340–373</a> report; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L399">399–408</a> self-check; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L314">314–329</a> clearance</p>
+<p class="muted"><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L340">sim/wall_flip_sim.py:340–373</a> report; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L399">399–408</a> self-check; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L314">314–329</a> clearance</p>
 
 <!-- ================================================================ -->
 <h2 id="p2">Part 2: the numbers</h2>
 <p>Sources: <a href="PROJECT.html">PROJECT.html</a> §3–§8 and the source table in the
-<a href="https://github.com/az9713/roadster-simulation#source-videos">README</a>. "Derived" values were calculated for
+<a href="https://github.com/az9713/roadster-physics#source-videos">README</a>. "Derived" values were calculated for
 this report by <code>out/physics/make_charts.py</code> or by the sim run.</p>
 
 <h3 id="n-car">The car</h3>
@@ -453,7 +453,7 @@ is not published. Body axes: x forward, y left, z up, from the CG.</p>
 <tr><td>Valve lag</td><td colspan="4">20 ms first-order</td><td><span class="tag e">est.</span></td></tr>
 <tr><td>Thrust coefficient \(C_f\)</td><td colspan="4">1.6 (expanded nozzle, about 500:1 pressure ratio)</td><td><span class="tag e">est.</span></td></tr>
 </table></div>
-<p class="muted">Code: <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L58">sim/wall_flip_sim.py:58–66</a>, \(C_f\) line 36, valve lag line 46.</p>
+<p class="muted">Code: <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L58">sim/wall_flip_sim.py:58–66</a>, \(C_f\) line 36, valve lag line 46.</p>
 
 <h3 id="n-tank">The tank and the gas</h3>
 <div class="scroll"><table>
@@ -689,7 +689,7 @@ separation, not the moment the suction was switched off. The HUD reads 1.0–1.1
 before the tyres can grip. At a steady 8 m/s it needs about 2,700 kgf, a bit more than half of what the fans gave. The
 ceiling is straight, so the car is not turning when it lets go. The G gauge stays at 1 G while the car hangs on, whatever
 the suction does, and falls only when the car comes off.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L193">sim/wall_flip_sim.py:193–194</a> tyre force and minimum suction; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L210">210–213</a> initial flight state</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L193">sim/wall_flip_sim.py:193–194</a> tyre force and minimum suction; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L210">210–213</a> initial flight state</div>
 
 <!-- ================================================================ -->
 <h3 id="f2">4.2 Letting go: separation from the ceiling</h3>
@@ -720,7 +720,7 @@ window.</p>
 <div class="card plain"><b class="lbl">In plain words.</b> When the suction stops, the car falls away from the ceiling
 almost as fast as it would fall from a roof. It travels about 1.1 m more under the ceiling (in the longer-ceiling version),
 then it is past the edge. By then the gap is under 10 cm, so the roll must not start much earlier.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L48">sim/wall_flip_sim.py:48</a> <code>T_RELEASE</code>; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L55">55</a> <code>LIP_EXT</code>; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L322">322</a> clearance check starts at +0.3 s</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L48">sim/wall_flip_sim.py:48</a> <code>T_RELEASE</code>; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L55">55</a> <code>LIP_EXT</code>; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L322">322</a> clearance check starts at +0.3 s</div>
 
 <!-- ================================================================ -->
 <h3 id="f3">4.3 One model for the whole window</h3>
@@ -752,7 +752,7 @@ lists which terms the sim contains.</p>
 speed, moment changes the spin. While the car touches the ceiling, the surface and the suction are two more forces. When
 it lets go, they switch off. Everything else (jets, air, gravity) acts all the time. The sim contains the large terms; the
 rest of this part measures the small ones.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L287">sim/wall_flip_sim.py:287–296</a> forces, drag and the Euler step</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L287">sim/wall_flip_sim.py:287–296</a> forces, drag and the Euler step</div>
 
 <!-- ================================================================ -->
 <h3 id="f4">4.4 The half-roll as a rigid-body problem</h3>
@@ -787,7 +787,7 @@ roll.</p>
 the spin must reach about 7.9 rad/s (450°/s) halfway. The hardest push comes about a fifth of the way in and again a fifth
 from the end. Two jets on one side give that push at about a third of their power. A heavier-to-turn car needs
 proportionally more.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L49">sim/wall_flip_sim.py:49</a> roll window; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L218">218–220</a> <code>R_ref</code>; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L37">37</a> inertia</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L49">sim/wall_flip_sim.py:49</a> roll window; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L218">218–220</a> <code>R_ref</code>; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L37">37</a> inertia</div>
 
 <!-- ================================================================ -->
 <h3 id="f5">4.5 Jets that only push: the roll throws the car sideways</h3>
@@ -830,7 +830,7 @@ direction of the real car is not measured. The triangulation that would measure 
 one side fire; to stop it, the jets on the other side fire. Both pushes have a sideways part in the same direction,
 because the car is on its side between them. So a jet roll also throws the car sideways, about 1.7 m/s here. The real car
 did drift sideways. The sim's autopilot fights the drift and keeps the car on its line.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L60">sim/wall_flip_sim.py:60–66</a> nozzle positions and directions; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L267">267–268</a> sideways law \(a_y\)</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L60">sim/wall_flip_sim.py:60–66</a> nozzle positions and directions; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L267">267–268</a> sideways law \(a_y\)</div>
 
 <!-- ================================================================ -->
 <h3 id="f6">4.6 What the sim's roll did</h3>
@@ -860,7 +860,7 @@ the roll.</p>
 <div class="card plain"><b class="lbl">In plain words.</b> The planned roll matches the video. The sim's autopilot follows
 it about 0.1 s late, turns too far (34.3° past upright) and needs half a second to settle. The cause is a simple feedback
 law with no "look-ahead" term. The jets supply all of the twist; nothing else comes close.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L277">sim/wall_flip_sim.py:277</a> attitude law; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L46">46</a> valve lag</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L277">sim/wall_flip_sim.py:277</a> attitude law; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L46">46</a> valve lag</div>
 
 <!-- ================================================================ -->
 <h3 id="f7">4.7 The G gauge during the roll</h3>
@@ -945,7 +945,7 @@ percentage of the peak jet roll moment (26.0 kN·m). Each label says whether the
 <div class="card plain"><b class="lbl">In plain words.</b> At 8–14 m/s the air pushes on the car with less than 5% of
 its weight. The air also resists the spin, but with about 0.5% of what the jets apply. The sim leaves those out, and
 they would change the roll by about 2.5° if nobody corrected it. The jet-induced suction in open air is smaller still.
-<br><a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L43">sim/wall_flip_sim.py:43</a> drag areas; <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L290">290</a> drag force</div>
+<br><a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L43">sim/wall_flip_sim.py:43</a> drag areas; <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L290">290</a> drag force</div>
 
 <!-- ================================================================ -->
 <h3 id="f9">4.9 The jets and the ceiling</h3>
@@ -983,7 +983,7 @@ up at the last part of the ceiling. A jet blowing at a nearby wall sucks the bod
 against the jet that starts the roll. Standard formulas for this effect do not fit a car sliding past a narrow ceiling
 edge. If it cancelled that jet completely, it would take away about one eighth of the start-up spin, and only with the
 longer ceiling.
-<br>Computed in <code>out/physics/flip.py</code>; ceiling geometry from <a class="src" href="https://github.com/az9713/roadster-simulation/blob/main/sim/wall_flip_sim.py#L314">sim/wall_flip_sim.py:314–320</a></div>
+<br>Computed in <code>out/physics/flip.py</code>; ceiling geometry from <a class="src" href="https://github.com/az9713/roadster-physics/blob/main/sim/wall_flip_sim.py#L314">sim/wall_flip_sim.py:314–320</a></div>
 
 <!-- ================================================================ -->
 <h3 id="f10">4.10 After: into the burn, and what the model captures</h3>

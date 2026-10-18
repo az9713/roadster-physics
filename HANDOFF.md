@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-17. Git repo, pushed to github.com/az9713/roadster-simulation (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-17. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal

@@ -5,19 +5,19 @@ The car drives up a curved wall, rides the 170° overhang upside down, lets go a
 in the air, and lands on its cold-gas thrusters at about 56.3 s. Every dimension of the wall and the car comes from
 measurements of the event video (the broadcast HUD and calibrated camera views), or from press reports.
 
-[![Broadcast cut of the simulation: click to play the videos](out/poster.jpg)](https://az9713.github.io/roadster-simulation/)
+[![Broadcast cut of the simulation: click to play the videos](out/poster.jpg)](https://az9713.github.io/roadster-physics/)
 
 *Click the image to open the video page (broadcast cut with HUD and sound, broadcast cut, coverage cut).*
 
-**Live pages (GitHub Pages):** <https://az9713.github.io/roadster-simulation/>
+**Live pages (GitHub Pages):** <https://az9713.github.io/roadster-physics/>
 
-- [`index.html`](https://az9713.github.io/roadster-simulation/) — the three draft videos in browser players.
-- [`PROJECT.html`](https://az9713.github.io/roadster-simulation/PROJECT.html) — the project document: all
+- [`index.html`](https://az9713.github.io/roadster-physics/) — the three draft videos in browser players.
+- [`PROJECT.html`](https://az9713.github.io/roadster-physics/PROJECT.html) — the project document: all
   measurements, sources, the model, and the change log.
-- [`replay.html`](https://az9713.github.io/roadster-simulation/replay.html) — interactive 3D replay (Three.js).
-- [`PHYSICS.html`](https://az9713.github.io/roadster-simulation/PHYSICS.html) — the physics report: the complete theory
+- [`replay.html`](https://az9713.github.io/roadster-physics/replay.html) — interactive 3D replay (Three.js).
+- [`PHYSICS.html`](https://az9713.github.io/roadster-physics/PHYSICS.html) — the physics report: the complete theory
   with derivations, every parameter with its status (measured, published, derived, est.), and the results against the HUD.
-- [`DEVELOPMENT-JOURNEY.html`](https://az9713.github.io/roadster-simulation/DEVELOPMENT-JOURNEY.html) — how it was
+- [`DEVELOPMENT-JOURNEY.html`](https://az9713.github.io/roadster-physics/DEVELOPMENT-JOURNEY.html) — how it was
   built, from the first prompt to this site: the videos, the measurements, the physics, Blender, what went wrong, and
   the unknown unknowns.
 
