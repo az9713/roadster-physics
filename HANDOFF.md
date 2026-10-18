@@ -1,7 +1,7 @@
 # HANDOFF — Tesla Roadster wall-flip simulation
 
 **Read this first each new session.** There is no project CLAUDE.md; the global rules in `~/.claude/CLAUDE.md` apply.
-Updated 2026-10-18. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
+Updated 2026-10-18 08:45. Git repo, pushed to github.com/az9713/roadster-physics (GitHub Pages on). `PROJECT.html` is the living project document:
 **update it (§9 change log) after every step.** All measurements, findings and sources are there.
 
 ## Goal
@@ -71,10 +71,11 @@ Purpose: measure the real car path after release from two views (shot B + slow-m
 - Renders: `out/coverage_draft.mp4` (EEVEE), `out/broadcast_draft.mp4` (EEVEE), `out/broadcast_draft_hud.mp4`
   (HUD + sound, 13.97 s). Sound: `out/sfx/` (8 ElevenLabs takes, 400.8 credits, flow "Roadster wall flip SFX"),
   mix `python out/sfx/mix.py` -> `out/sfx/broadcast_mix.wav`. HUD: `python blender/hud_mux.py <in.mp4> <out.mp4>`.
-- CYCLES FINAL RUNNING (started 2026-10-17 ~05:45, est. 15-20 h): chain `out/logs/render_all.sh`, bash PID in
-  `out/logs/chain.pid` (13984). Frames -> `out/edl_broadcast_final/segNN/`, log `out/logs/edl_broadcast_final.log`,
-  done when `out/logs/chain.log` has "final exit 0" and `out/broadcast_final.mp4` exists. Resumable: rerun
-  `render_all.sh` (it deletes 0-byte placeholders; finished drafts are skipped frame by frame).
+- CYCLES FINAL DONE 2026-10-18 07:58 (3 runs, about 8 h of render): `out/broadcast_final.mp4`, 1280x720, 30 fps,
+  419 frames (seg00 21 + seg01 398, same as the EEVEE draft; "420" in older notes was off by one), 13.97 s, 1.38 MB.
+  Untracked in git (the drafts are tracked). Frames in `out/edl_broadcast_final/segNN/`. Runs 1 and 2 stopped at frames
+  342 and 410 with no crash file and no Windows event (cause not proven; PROJECT.html §9 2026-10-18). Logs:
+  `out/logs/edl_broadcast_final.run1.log`, `.run2.log`, current `.log`. Chain: `out/logs/render_all.sh` (resumable).
 
 ## Physics report: DONE 2026-10-17
 `PHYSICS.html` at the repo root (KaTeX 0.16.9 from cdnjs with SRI), linked from `index.html`, `README.md`,
@@ -94,24 +95,15 @@ Pages 200 verified (page + flip_film.png). Not done: interactive Chrome console 
 Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 102268 (Kuhn et al. 1991, p. 5).
 
 ## Next task
-0. Cycles final STOPPED AGAIN (verified 2026-10-18). Run 2 (PID 20012, started 2026-10-17 10:26) saved
-   `seg01/0409.png` at 15:15:04, left a 0-byte `seg01/0410.png`, and `out/logs/chain.log` got "final exit 1" at 15:18:43.
-   PID 20012 is gone. The last line of `out/logs/edl_broadcast_final.log` is a normal "Saved" line: no error text.
-   409 of 420 frames done, 11 left (~4.7 min/frame, ~1 h). No `out/broadcast_final.mp4`. Run 1 stopped the same way at
-   frame 341 (cause not proven; see `out/logs/edl_broadcast_final.run1.log`).
-   DIAGNOSED 2026-10-18 (cause still not proven; PROJECT.html §9 has the entry): no crash file; Windows System and
-   Application logs have NO event 15:10-15:25 (no 4101 driver reset, no 1000 app error, no 2004 resource exhaustion);
-   standby only at 16:05 (lid). Both runs were started by `Start-Process` (hidden, detached, session f0947439), so a
-   Claude Code exit does not explain them. Run 1 left no "final exit" line (bash parent also died); run 2 left
-   "final exit 1" 3.6 min into frame 410. Exit 1 with no log text matches an external forced stop (Task Manager
-   "End task", `taskkill /F`). No project transcript kills Blender. VRAM idle now 247/4096 MiB.
-   RUN 3 started 2026-10-18 07:10:52 at the owner's request: bash PID 11928 (`out/logs/chain.pid`), Blender PID 260.
-   Run-2 log kept as `out/logs/edl_broadcast_final.run2.log`. EEVEE steps skipped (exit 0); frame 410 saved at
-   +4:47. Done when `out/logs/chain.log` ends "final exit 0" and `out/broadcast_final.mp4` exists (~08:05). If it
-   stops again, the cause is not proven: check the same evidence (crash file, event log, standby) first.
-1. When `out/broadcast_final.mp4` exists: `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`.
-   Check 3 frames (44.0, 54.45, 55.95) against `frames/ref/`. Update PROJECT.html (status table row "Blender
-   photoreal scene" -> done, §9 entry with render time and file).
+1. **START HERE.** `python blender/hud_mux.py out/broadcast_final.mp4 out/broadcast_final_hud.mp4`. Check 3 frames
+   (44.0, 54.45, 55.95) against `frames/ref/`. Decide with the owner whether to commit the two final MP4s (drafts are
+   tracked; check size first). Update PROJECT.html: status table row "Blender photoreal scene" -> done, §9 line for the
+   HUD file (the §9 render entry is already written).
+   FINDING (2026-10-18, owner saw "no difference"): final vs `out/broadcast_draft.mp4` luma PSNR is 39.6-42.0 dB per
+   second for 1-9 s (near identical: same scene, lamps, cameras; only edge and noise differences) and 22.2-22.6 dB for
+   11-13 s. There the Cycles cloud (64 samples, denoised, volume_step_rate 2.0, `build_scene.py:646-648`) is thinner
+   and grainy, so the car shows through it; the EEVEE cloud is smooth and opaque. Ask the owner which cloud is wanted
+   before the HUD mux (a Cycles cloud fix means re-rendering about frames 330-419, about 7 h at 4.7 min/frame).
 2. Tell the owner: deliverables, the failed gate, the image findings (car at/past lip at 52.25; +y drift; jets at 53.45
    vs T_BURN 53.95), credits used. Offer: short variant as the render default? (B wall edges favour HUD length; the
    car-at-lip image favours short.)
@@ -136,7 +128,7 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
 ## Decisions from the owner (2026-10-17)
 - Short-overhang variant as a switch (done). ElevenLabs SFX allowed, cap ~10 generations (8 used).
 - Sim refit only if car rms <= 5 px in R1 and B and no frame > 15 px (failed -> not refitted).
-- One Cycles final of `broadcast` (stopped at 409/420, see Next task 0); `coverage` as EEVEE only (done). Agent judges the look itself.
+- One Cycles final of `broadcast` (done 2026-10-18, see Outcome); `coverage` as EEVEE only (done). Agent judges the look itself.
 
 ## Session-transient scratch (gone after clear; regenerate only if needed)
 The session scratchpad (temporary, not in the repo):
@@ -149,6 +141,9 @@ The session scratchpad (temporary, not in the repo):
   `rigorous-explainer` (checktex/checklt/check_links/check_prose run; MathJax-only checks skipped) and `dataviz`
   (palette validator); `claude-in-chrome` (opened the repo for the owner).
 - Advisor guidance (followed): report measured vs sim to the owner before editing the sim.
+- 2026-10-18: render-stop diagnosis used Windows event logs, CLI transcripts in
+  `~/.claude/projects/C--Users-simon-Downloads-tesla-roadster-simulation/*.jsonl`, and `search_session_transcripts`.
+  `handoff-after-clear` refreshed this file.
 - 2026-10-18: `be-ambitious` skill used to write the plan in Next task 3 (prompts only; none run yet).
 - Local `origin` URL still says `roadster-simulation`; the GitHub repo is now `roadster-physics` (commit 7e281bc).
   Push works through GitHub's redirect.
