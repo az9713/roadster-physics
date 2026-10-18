@@ -940,7 +940,7 @@ id,doc,section,context,value,after,evidence,check,script,output_line,expr,tol,no
 939,PROJECT.html,9. Change log, body from 115.4 s. The box slides to the nose: MIL x is 17–,40, px left of CAR_B from 11,footage,no,,,,,historical (change log or quoted old run); not compared
 940,PROJECT.html,9. Change log,ox slides to the nose: MIL x is 17–40 px left of CAR_B from ,114.8," s, while its y stays wit",footage,no,,,,,historical (change log or quoted old run); not compared
 941,PROJECT.html,9. Change log,"–40 px left of CAR_B from 114.8 s, while its y stays within ",4, px of CAR_B in every fra,footage,no,,,,,historical (change log or quoted old run); not compared
-942,PROJECT.html,9. Change log,"or is in the trackers, not in CAR_B. I did not download the ",1080,p source: a file download,none,no,,,,,historical (change log or quoted old run); not compared
+942,PROJECT.html,9. Change log,"or is in the trackers, not in CAR_B. I did not download the ",1080,p source: the failure com,footage,no,,,,,historical (change log or quoted old run); not compared
 943,PROJECT.html,table,<!--TABLE:wall_profile_hud.csv-->,(table),,HUD,yes,data/wall_profile_hud.csv,every cell,TABLE:wall_profile_hud.csv,0,HTML table must equal the CSV cell by cell
 944,PROJECT.html,table,<!--TABLE:hud_wall_flip.csv-->,(table),,HUD,yes,data/hud_wall_flip.csv,every cell,TABLE:hud_wall_flip.csv,0,HTML table must equal the CSV cell by cell
 945,PHYSICS.html,The physics of the Roadster wall-flip simulation,"all-flip simulation Report on sim/wall_flip_sim.py, written ",2026-10-17,. Every number on this pa,none,no,,,,,date or video timestamp
@@ -2418,7 +2418,7 @@ id,doc,section,context,value,after,evidence,check,script,output_line,expr,tol,no
 2417,README.md,What is in the repository,"deos: `coverage_draft.mp4` (20.5 s), `broadcast_draft.mp4` (",13.97," s), `broadcast_draft_hud",footage,no,,,,,no tool prints it
 2418,README.md,What is in the repository,"`broadcast_draft.mp4` (13.97 s), `broadcast_draft_hud.mp4` (",13.97," s, HUD + sound). | | `ou",footage,no,,,,,no tool prints it
 2419,README.md,Status and known limits,ts  - The simulation is done and its self-check passes. The ,3,D replay and the EEVEE dr,footage,no,,,,,no tool prints it
-2420,README.md,Status and known limits,check.py --fast`. - The flight after release is planar (y = ,0,). The triangulation of t,footage,no,,,,,no tool prints it
+2420,README.md,Status and known limits,one has no hook). - The flight after release is planar (y = ,0,). The triangulation of t,footage,no,,,,,no tool prints it
 2421,README.md,Status and known limits,on of the real car path did not reach its accuracy limit (≤ ,5, px; best result 76 px in,footage,no,,,,,no tool prints it
 2422,README.md,Status and known limits, path did not reach its accuracy limit (≤ 5 px; best result ,76," px in R1, 50 px in shot ",footage,no,,,,,no tool prints it
 2423,README.md,Status and known limits," reach its accuracy limit (≤ 5 px; best result 76 px in R1, ",50," px in shot B), so the si",footage,no,,,,,no tool prints it

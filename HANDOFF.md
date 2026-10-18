@@ -110,7 +110,7 @@ Sources used: NASA TM 86825 (Kuhn & Eshleman 1985, Fig. 2, Wyatt), NASA TM 10226
   22.7 px (max 76.0), MIL 140x90 median 23.6 px (max 40.0, y within 4 px, x 17-40 px left from 114.8: the fixed-aspect
   box slides to the nose as the car grows from ~75 px end-on to ~150 px side-on). Stills = decoded frames 12, 18 ... 96
   of the 720p file from 113.2 s (exact match). CSRT came from opencv-contrib installed into the session scratch only.
-  1080p not downloaded (needs the owner's approval; resolution is not the failure cause).
+  1080p not downloaded (resolution is not the failure cause; the box shape is).
 - 3c NOT RUN (rule: stop after a failed 3b). No `out/fit.json`; no reprojection check in `check.py` beyond the panel data.
 
 ## Next task
